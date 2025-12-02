@@ -1,0 +1,7 @@
+name = "KMeansClustering"
+uuid = "670bb445-d745-4272-aa1b-6ff82f84f261"
+authors = ["Mark-André Schadow <m.schadow@campus.tu-berlin.de>"]
+version = "0.1.0-DEV"
+
+[compat]
+julia = "1.11"
