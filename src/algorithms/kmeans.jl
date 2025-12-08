@@ -1,3 +1,61 @@
 module KMeans
 
+using LinearAlgebra: norm
+using Statistics: mean
+
+function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64})
+
+    d, N = dataset.size
+    k = size(initialCentroids, 2)
+
+    if d != size(initialCentroids, 1)
+        error("dimensions of data and centroids do not match")
+    end
+
+    assignedto = Vector{Int}(undef, N)
+    centroids = initialCentroids
+    nochanges = false
+
+    while !nochanges
+
+        # assign points to nearest centroid
+
+        for i in 1:N
+            point = dataset[:, i]
+            closestindex = 1
+            mindist = norm(point - centroids[:, 1])
+
+            for j in 2:k
+                otherdist = norm(point - centroids[:, j])
+                if otherdist < mindist
+                    mindist = otherdist
+                    closestindex = j
+                end
+            end
+            assignedto[i] = closestindex
+        end
+
+        # calculate new centroid of each cluster
+
+        newcentroids = Matrix{Float64}(undef, d, k)
+
+        for i in 1:k
+            newcentroids[:, i] = mean(dataset[:, assignedto.==i], dims=2)
+        end
+
+        # check for convergence
+
+        if newcentroids == centroids
+            nochanges = true
+        else
+            centroids = newcentroids
+        end
+
+    end
+
+    return assignedto, centroids
+end
+
+export simplekmeans
+
 end
