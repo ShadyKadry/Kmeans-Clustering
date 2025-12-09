@@ -40,21 +40,27 @@ function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64
         newcentroids = Matrix{Float64}(undef, d, k)
 
         for i in 1:k
-            newcentroids[:, i] = mean(dataset[:, assignedto.==i], dims=2)
+            # check for empty cluster
+            indices = findall(==(i), assignedto)
+            if isempty(indices)
+                newcentroids[:, i] = centroids[:, i]
+            else
+                newcentroids[:, i] = mean(dataset[:, indices], dims=2)
+            end
         end
 
         # check for convergence
 
         if norm(newcentroids - centroids) < tol
             converged = true
-            break
+            return centroids, assignedto, iter, converged
         else
             centroids = newcentroids
         end
 
     end
 
-    return centroids, assignedto, iter, converged
+    return centroids, assignedto, maxiter, converged
 end
 
 end
