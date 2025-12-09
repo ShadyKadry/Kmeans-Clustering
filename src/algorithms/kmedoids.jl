@@ -1,26 +1,27 @@
 module KMedoids
 
 using Random
+using DataStructures
 
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
     max_iter::UInt32
     tol::Float32
     rng::AbstractRNG
-    start_prob::Float32
-    end_prob::Float32
     distance_fun::T
 end
 
+t_Medoid_Idx = UInt32
+t_Medoid_Array = Array{t_Medoid_Idx}
 
+t_Cluster_Map = DefaultDict{t_Medoid_Idx, t_Medoid_Array}
+t_Cluster_Weights = DefaultDict{t_Medoid_Idx, Float64}
 
 function KMedoids_init(
     n_clusters::UInt32,
     max_iter::UInt32,
     tol::Float32,
     rng::AbstractRNG,
-    start_prob::Float32,
-    end_prob::Float32,
     distance_fun::T
 ) where {T<:Function}
     return KMedoids_Settings(
@@ -28,8 +29,6 @@ function KMedoids_init(
         max_iter,
         tol,
         rng,
-        start_prob,
-        end_prob,
         distance_fun,
     )
 end
@@ -46,7 +45,7 @@ function get_shortest_distance_to_medoid(
     self::KMedoids_Settings,
     data::AbstractMatrix,
     row_index::Integer,
-    medoids::Vector{UInt32}
+    medoids::t_Medoid_Array
 )
     min_distance = Inf
     current_medoid = 0
@@ -59,68 +58,131 @@ function get_shortest_distance_to_medoid(
         end
     end
 
-    return min_distance
-end
-
-
-function select_distant_medoid(
-    distance_indices::Vector{Int64},
-    start_prob::AbstractFloat,
-    end_prob::AbstractFloat
-)
-
-    n = length(distance_indices)
-
-    start_index = max(1, round(UInt32, start_prob * n))
-    end_index = max(start_index, round(UInt32, end_prob * n))
-
-    return distance_indices[rand(start_index:end_index)]
-end
-
-function find_distant_medoid(
-    self::KMedoids_Settings,
-    data::AbstractMatrix,
-    medoids::Vector{UInt32}
-)
-    rows, cols = size(data)
-
-    distances = Vector{Float64}(undef, rows)
-
-    for row in 1:rows
-        dist = get_shortest_distance_to_medoid(self, data, row, medoids)
-        distances[row] = dist
-    end
-
-    distance_indices = sortperm(distances)   # indices sorted by distance
-    chosen = select_distant_medoid(distance_indices, self.start_prob, self.end_prob)
-
-    return chosen
+    return current_medoid, min_distance
 end
 
 function initialize_medoids(
     self::KMedoids_Settings,
     data::AbstractMatrix
 )
-    rows, cols = size(data)
+    rows, _ = size(data)
 
-    medoids = UInt32[]
+    medoids = t_Medoid_Idx[]
 
-    push!(medoids, UInt32(rand(self.rng, 1:rows)))
-
-    for i = 2:self.n_clusters
-        push!(medoids, find_distant_medoid(self, data, medoids))
+    for _ in 1:self.n_clusters
+        n_med = t_Medoid_Idx(rand(self.rng, 1:rows))
+        if !(n_med in medoids)
+            push!(medoids, n_med)
+        end
     end
 
     return medoids
 end
 
-function calculate_clusters()
+function calculate_clusters(self::KMedoids_Settings, data::AbstractMatrix, medoids::t_Medoid_Array)
+    rows, _ = size(data)
 
+    clusters = t_Cluster_Map(() -> t_Medoid_Array[])
+    cluster_distances = t_Cluster_Weights(0.0)
+
+    for row in 1:rows
+        nearest_medoid, nearest_distance = get_shortest_distance_to_medoid(self, data, row, medoids)
+        push!(clusters[nearest_medoid], row)
+        cluster_distances[nearest_medoid] += nearest_distance
+    end
+
+    for medoid in medoids
+        cluster_distances[medoid] /= length(clusters[medoid])
+    end
+
+    return clusters, cluster_distances
 end
 
-function update_clusters()
+function calculate_inter_cluster_distance(
+    self::KMedoids_Settings,
+    data::AbstractMatrix,
+    medoid::t_Medoid_Idx,
+    cluster_list::t_Medoid_Array
+)
+    distance = 0.0
+    for idx in cluster_list
+        distance += get_distance(self, data[medoid, :], data[idx, :])
+    end
 
+    return distance / length(cluster_list)
+end
 
+function swap_and_recalculate_clusters(
+    self::KMedoids_Settings,
+    data::AbstractMatrix,
+    medoids::t_Medoid_Array,
+    clusters::t_Cluster_Map,
+    weights::t_Cluster_Weights
+)
+    new_cluster_dist = t_Cluster_Weights(0.0)
+
+    for medoid in medoids
+        shortest_found = false
+
+        for data_index in clusters[medoid]
+            if data_index != medoid
+                cluster_list = copy(clusters[medoid])
+                idx = findfirst(==(data_index), cluster_list)
+                if idx !== nothing
+                    cluster_list[idx] = medoid
+                end
+
+                new_distance = calculate_inter_cluster_distance(
+                    self, data, data_index, cluster_list
+                )
+
+                if new_distance < weights[medoid]
+                    new_cluster_dist[data_index] = new_distance
+                    shortest_found = true
+                    break
+                end
+            end
+        end
+
+        if !shortest_found
+            new_cluster_dist[medoid] = weights[medoid]
+        end
+    end
+
+    return new_cluster_dist
+end
+
+function sum_cluster_distances(
+    self::KMedoids_Settings,
+    cluster_dist::t_Cluster_Weights
+)
+    return sum(values(cluster_dist))
+end
+
+function update_clusters(
+    self::KMedoids_Settings,
+    data::AbstractMatrix,
+    medoids::t_Medoid_Array,
+    clusters::t_Cluster_Map,
+    weights::t_Cluster_Weights
+)
+    for idx in 1:self.max_iter
+        cluster_dist_with_new_medoids = swap_and_recalculate_clusters(self, data, medoids, clusters, weights)
+        
+        old_sum = sum_cluster_distances(self, weights)
+        new_sum = sum_cluster_distances(self, cluster_dist_with_new_medoids)
+
+        # @info old_sum, new_sum
+        if new_sum < old_sum && (old_sum - new_sum) > self.tol
+            medoids = collect(t_Medoid_Idx, keys(cluster_dist_with_new_medoids))
+            clusters, weights = calculate_clusters(self, data, medoids)
+        else
+            @info idx
+            break
+        end
+    end
+
+    return medoids, clusters, weights
 end
 
 function KMedoids_fit(
@@ -129,32 +191,12 @@ function KMedoids_fit(
 )
     medoids = initialize_medoids(self, data)
 
-    return medoids
+    clusters, weights = calculate_clusters(self, data, medoids)
+
+    return update_clusters(self, data, medoids, clusters, weights)
 end
 
 export KMedoids_init
 export KMedoids_fit
 
 end
-
-using .KMedoids
-using Random
-
-test_dist(a::AbstractVector, b::AbstractVector) = sum((a .- b).^2)
-
-# Dummy data
-X = rand(20, 3)
-
-settings = KMedoids.KMedoids_init(
-    UInt32(4),
-    UInt32(20),
-    Float32(1e-2),
-    MersenneTwister(1234),
-    Float32(0.2),
-    Float32(0.8),
-    test_dist
-)
-
-medoids = KMedoids.KMedoids_fit(settings, X)
-
-@info medoids
