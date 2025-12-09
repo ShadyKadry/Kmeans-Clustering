@@ -3,9 +3,9 @@ module KMeans
 using LinearAlgebra: norm
 using Statistics: mean
 
-function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64})
+function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64}, maxiter::Int, tol::Real)
 
-    d, N = dataset.size
+    d, N = size(dataset)
     k = size(initialCentroids, 2)
 
     if d != size(initialCentroids, 1)
@@ -14,9 +14,9 @@ function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64
 
     assignedto = Vector{Int}(undef, N)
     centroids = initialCentroids
-    nochanges = false
+    converged = false
 
-    while !nochanges
+    for iter in 1:maxiter
 
         # assign points to nearest centroid
 
@@ -45,17 +45,16 @@ function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64
 
         # check for convergence
 
-        if newcentroids == centroids
-            nochanges = true
+        if norm(newcentroids - centroids) < tol
+            converged = true
+            break
         else
             centroids = newcentroids
         end
 
     end
 
-    return assignedto, centroids
+    return centroids, assignedto, iter, converged
 end
-
-export simplekmeans
 
 end
