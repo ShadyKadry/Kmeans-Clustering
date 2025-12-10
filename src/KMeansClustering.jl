@@ -13,22 +13,30 @@ include("algorithms/ckmeans.jl")
 export kmeans, KMeansResult
 
 """
-    kmeans(X, k; init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
+    kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
 
 High-level entry point for k-means clustering.
 
 Arguments
-- X: data matrix with features in rows and observations in columns.
-- k: number of clusters.
+- `X`: data matrix with features in rows and observations in columns.
+- `k`: number of clusters.
 
 Keyword arguments
-- method: algorithm selector (:kmedoids)
-- init: initialization strategy (:random, :kmeanspp).
-- maxiter: maximum number of Lloyd iterations.
-- tol: tolerance for convergence.
-- rng: random number generator.
+- `method`: algorithm selector, see below (:kmedoids)
+- `init`: initialization strategy (:random, :kmeanspp).
+- `maxiter`: maximum number of Lloyd iterations.
+- `tol`: tolerance for convergence.
+- `rng`: random number generator.
 
 Returns a `KMeansResult`.
+
+Available algorithms:
+
+- K-Medoids (method=:kmedoids)
+    As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
+    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating 
+    artificial ones.
+
 """
 function kmeans(X::AbstractMatrix{<:Real}, 
                 k::Integer;
