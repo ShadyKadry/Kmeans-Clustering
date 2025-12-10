@@ -6,6 +6,7 @@ include("types.jl")
 include("utils.jl")
 include("algorithms/kmeans.jl")
 include("algorithms/kmeanspp.jl")
+include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
@@ -21,6 +22,7 @@ Arguments
 - k: number of clusters.
 
 Keyword arguments
+- method: algorithm selector (:kmedoids)
 - init: initialization strategy (:random, :kmeanspp).
 - maxiter: maximum number of Lloyd iterations.
 - tol: tolerance for convergence.
@@ -28,12 +30,20 @@ Keyword arguments
 
 Returns a `KMeansResult`.
 """
-function kmeans(X::AbstractMatrix{<:Real}, k::Integer;
+function kmeans(X::AbstractMatrix{<:Real}, 
+                k::Integer;
+                method::Symbol = :kmeans,
                 init::Symbol = :random,
-                maxiter::Int = 100,
+                maxiter::Int = 1000,
                 tol::Real = 1e-4,
-                rng::AbstractRNG = Random.GLOBAL_RNG)
-    error("kmeans is not implemented yet. Implement Lloyd's algorithm in algorithms/kmeans.jl and call it from here.")
+                rng::AbstractRNG = Random.GLOBAL_RNG
+        )
+
+    if method == :kmedoids
+        return KMedoids.KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+    else
+        error("method '$method' is not implemented.")
+    end
 end
 
 end # module

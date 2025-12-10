@@ -3,6 +3,8 @@ module KMedoids
 using Random
 using DataStructures
 
+include("../types.jl") 
+
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
     max_iter::UInt32
@@ -17,21 +19,6 @@ t_Medoid_Array = Array{t_Medoid_Idx}
 t_Cluster_Map = DefaultDict{t_Medoid_Idx, t_Medoid_Array}
 t_Cluster_Weights = DefaultDict{t_Medoid_Idx, Float64}
 
-function KMedoids_init(
-    n_clusters::UInt32,
-    max_iter::UInt32,
-    tol::Float32,
-    rng::AbstractRNG,
-    distance_fun::T
-) where {T<:Function}
-    return KMedoids_Settings(
-        n_clusters,
-        max_iter,
-        tol,
-        rng,
-        distance_fun,
-    )
-end
 
 function get_distance(
     self::KMedoids_Settings,
@@ -44,14 +31,14 @@ end
 function get_shortest_distance_to_medoid(
     self::KMedoids_Settings,
     data::AbstractMatrix,
-    row_index::Integer,
+    col_index::Integer,
     medoids::t_Medoid_Array
 )
     min_distance = Inf
     current_medoid = 0
 
     for medoid in medoids
-        current_distance = get_distance(self, data[medoid, :], data[row_index, :])
+        current_distance = get_distance(self, data[:, medoid], data[:, col_index])
         if current_distance < min_distance
             min_distance = current_distance
             current_medoid = medoid
@@ -62,15 +49,16 @@ function get_shortest_distance_to_medoid(
 end
 
 function initialize_medoids(
-    self::KMedoids_Settings,
-    data::AbstractMatrix
+    data::AbstractMatrix,
+    n_clusters::UInt32,
+    rng::AbstractRNG
 )
-    rows, _ = size(data)
+    cols = size(data, 2)
 
     medoids = t_Medoid_Idx[]
 
-    for _ in 1:self.n_clusters
-        n_med = t_Medoid_Idx(rand(self.rng, 1:rows))
+    for _ in 1:n_clusters
+        n_med = t_Medoid_Idx(rand(rng, 1:cols))
         if !(n_med in medoids)
             push!(medoids, n_med)
         end
@@ -80,14 +68,14 @@ function initialize_medoids(
 end
 
 function calculate_clusters(self::KMedoids_Settings, data::AbstractMatrix, medoids::t_Medoid_Array)
-    rows, _ = size(data)
+    cols = size(data, 2)
 
     clusters = t_Cluster_Map(() -> t_Medoid_Array[])
     cluster_distances = t_Cluster_Weights(0.0)
 
-    for row in 1:rows
-        nearest_medoid, nearest_distance = get_shortest_distance_to_medoid(self, data, row, medoids)
-        push!(clusters[nearest_medoid], row)
+    for col in 1:cols
+        nearest_medoid, nearest_distance = get_shortest_distance_to_medoid(self, data, col, medoids)
+        push!(clusters[nearest_medoid], col)
         cluster_distances[nearest_medoid] += nearest_distance
     end
 
@@ -106,7 +94,7 @@ function calculate_inter_cluster_distance(
 )
     distance = 0.0
     for idx in cluster_list
-        distance += get_distance(self, data[medoid, :], data[idx, :])
+        distance += get_distance(self, data[:, medoid], data[:, idx])
     end
 
     return distance / length(cluster_list)
@@ -166,35 +154,88 @@ function update_clusters(
     clusters::t_Cluster_Map,
     weights::t_Cluster_Weights
 )
+    oidx = 0
     for idx in 1:self.max_iter
         cluster_dist_with_new_medoids = swap_and_recalculate_clusters(self, data, medoids, clusters, weights)
         
         old_sum = sum_cluster_distances(self, weights)
         new_sum = sum_cluster_distances(self, cluster_dist_with_new_medoids)
 
-        # @info old_sum, new_sum
         if new_sum < old_sum && (old_sum - new_sum) > self.tol
             medoids = collect(t_Medoid_Idx, keys(cluster_dist_with_new_medoids))
             clusters, weights = calculate_clusters(self, data, medoids)
-        else
-            @info idx
+        elseif new_sum < old_sum
             break
         end
+
+        oidx = idx
     end
 
-    return medoids, clusters, weights
+    return clusters, oidx, self.max_iter != oidx
 end
 
 function KMedoids_fit(
-    self::KMedoids_Settings,
-    data::AbstractMatrix
-)
-    medoids = initialize_medoids(self, data)
+    data::AbstractMatrix,
+    initial_medoids::t_Medoid_Array;
+    init_method::Symbol = :random,
+    max_iter::Integer = 100,
+    tol::Real = 10e-4,
+    rng::AbstractRNG = Random.GLOBAL_RNG,
+    distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
+) where {T<:Function}
+    self = KMedoids_Settings(
+        UInt32(length(initial_medoids)),
+        UInt32(max_iter),
+        Float32(tol),
+        rng,
+        distance_fun,
+    )
 
-    clusters, weights = calculate_clusters(self, data, medoids)
+    clusters, weights = calculate_clusters(self, data, initial_medoids)
 
-    return update_clusters(self, data, medoids, clusters, weights)
+    clusters, iterations, converged = update_clusters(self, data, initial_medoids, clusters, weights)
+
+    labels = zeros(Int, size(data, 2))
+
+    for (cluster_id, rows) in clusters
+        for r in rows
+            labels[r] = cluster_id
+        end
+    end
+
+    return KMeansResult(
+        data[:, collect(keys(clusters))],
+        labels,
+        -1.0,
+        iterations,
+        converged,
+        init_method
+    )
 end
+
+
+function KMedoids_fit(
+    data::AbstractMatrix,
+    n_clusters::Integer;
+    init_method::Symbol = :random,
+    max_iter::Integer = 100,
+    tol::Real = 10e-4,
+    rng::AbstractRNG = Random.GLOBAL_RNG,
+    distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
+) where {T<:Function}
+    medoids = initialize_medoids(data, UInt32(n_clusters), rng)
+
+    return KMedoids_fit(
+        data,
+        medoids,
+        init_method=init_method,
+        max_iter=max_iter,
+        tol=tol,
+        rng=rng,
+        distance_fun=distance_fun
+    )
+end
+
 
 export KMedoids_init
 export KMedoids_fit
