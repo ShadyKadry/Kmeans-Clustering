@@ -12,6 +12,8 @@ include("algorithms/ckmeans.jl")
 
 export kmeans, KMeansResult
 
+using .KMedoids: KMedoids_fit
+
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
 
@@ -48,7 +50,7 @@ function kmeans(X::AbstractMatrix{<:Real},
         )
 
     if method == :kmedoids
-        return KMedoids.KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+        return KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
     else
         error("method '$method' is not implemented.")
     end

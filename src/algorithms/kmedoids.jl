@@ -1,7 +1,7 @@
 module KMedoids
 
 using Random
-using DataStructures
+using DataStructures: DefaultDict
 
 include("../types.jl") 
 
