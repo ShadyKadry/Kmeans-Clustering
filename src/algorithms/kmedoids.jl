@@ -3,7 +3,7 @@ module KMedoids
 using Random
 using DataStructures: DefaultDict
 
-include("../types.jl") 
+using ..KMeansClustering: KMeansResult
 
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
@@ -213,7 +213,41 @@ function KMedoids_fit(
     )
 end
 
+"""
+    KMedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
+                 tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
 
+Perform K-Medoids clustering on a dataset.
+
+K-Medoids is a clustering algorithm similar to k-means, but cluster centers
+(*medoids*) are always chosen from actual data points, making the algorithm more
+robust to noise and outliers.
+
+Implementation is based on the description from:
+<http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html>
+
+# Arguments
+- `data::AbstractMatrix`  
+    A matrix of size `(n_features, n_samples)` where **columns are data points**
+    and **rows are features**.
+- `n_clusters::Integer`  
+    Number of clusters (i.e. number of medoids to compute).
+
+# Keyword Arguments
+- `init_method::Symbol = :random`  
+    Method for choosing initial medoids. Currently supported: `:random`.
+- `max_iter::Integer = 100`  
+    Maximum number of refinement iterations.
+- `tol::Real = 1e-4`  
+    Minimum improvement required for convergence.
+- `rng::AbstractRNG = Random.GLOBAL_RNG`  
+    Random number generator.
+- `distance_fun::Function`  
+    A function `dist(a, b)` returning the distance between two sample vectors.
+    Default is squared Euclidean distance.
+
+Returns a `KMeansResult`
+"""
 function KMedoids_fit(
     data::AbstractMatrix,
     n_clusters::Integer;
@@ -237,7 +271,6 @@ function KMedoids_fit(
 end
 
 
-export KMedoids_init
 export KMedoids_fit
 
 end
