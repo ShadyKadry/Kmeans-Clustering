@@ -39,13 +39,20 @@ Only one function is exposed:
     cluster_count = 4 # Number of clusters to separate the dataset into
 
     clustering_result = KMeansClustering.kmeans(
-        X,                  # Points, column-wise: rows are the features, cols are the points
+        # Points, column-wise: rows are the features, cols are the points
+        X,
+
         cluster_count,
-        method=:kmedoids,   # Select the KMeans-method to use
-        init=:random,       # Select, how the initial centroids should be chosen
-        maxiter=50,         # Maximum number of iterations before the algorithm is aborted
-        tol=1e-4,           # Tolerance of improvement between each iteration.
-        rng=my_rng          # Random Number Generator to use
+        # Select the KMeans-method to use
+        method=:kmedoids,
+        # Select, how the initial centroids should be chosen
+        init=:random,
+        # Maximum number of iterations before the algorithm is aborted
+        maxiter=50,
+        # Tolerance of improvement between each iteration
+        tol=1e-4,
+        # Random Number Generator to use
+        rng=my_rng
     )
 
     @info "Required Iterations: $(clustering_result.iterations)"
@@ -57,12 +64,12 @@ The return value contains the result:
 - `clustering_result.centers`: Matrix of center points
 - `clustering_result.assignments`: Vector, that maps each original point to one of the centers in clustering_result.centers
 - `clustering_result.iterations`: Number of iterations that was required
-- `clustering_result.converged`: If true, the algorithm finished successfully (tol was reached). If false, maxiter was reached and the algorithm aborted
+- `clustering_result.converged`: If true, the algorithm finished successfully (tol was reached). If false, `maxiter` was reached and the algorithm aborted
 
 ## Plotting
 
 
-The result of the `kmeans()` function can be directly plotted using `Plots.js`:
+The result of the `kmeans()` function can be directly plotted using `Plots.jl`:
 
 ```@example getting_started
 scatter(
