@@ -6,7 +6,7 @@ DocMeta.setdocmeta!(KMeansClustering, :DocTestSetup, :(using KMeansClustering); 
 makedocs(;
     modules=[KMeansClustering],
     authors="Mark-André Schadow <m.schadow@campus.tu-berlin.de>",
-    sitename="KMeans-Clustering.jl",
+    sitename="KMeansClustering.jl",
     format=Documenter.HTML(;
         canonical="https://github.com/ShadyKadry/Kmeans-Clustering.jl",
         edit_link="main",
@@ -14,6 +14,7 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Getting Started" => "getting_started.md"
     ],
 )
 
