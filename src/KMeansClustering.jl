@@ -13,6 +13,7 @@ include("algorithms/ckmeans.jl")
 export kmeans, KMeansResult
 
 using .KMedoids: KMedoids_fit
+using .KMeans: simplekmeans
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -40,17 +41,24 @@ Available algorithms:
     artificial ones.
 
 """
-function kmeans(X::AbstractMatrix{<:Real}, 
-                k::Integer;
-                method::Symbol = :kmeans,
-                init::Symbol = :random,
-                maxiter::Int = 1000,
-                tol::Real = 1e-4,
-                rng::AbstractRNG = Random.GLOBAL_RNG
-        )
+function kmeans(X::AbstractMatrix{<:Real},
+    k::Integer;
+    method::Symbol=:kmeans,
+    init::Symbol=:random,
+    maxiter::Int=1000,
+    tol::Real=1e-4,
+    rng::AbstractRNG=Random.GLOBAL_RNG
+)
 
     if method == :kmedoids
         return KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+    elseif method == :kmeans
+        if init == :random
+            idx = randperm(rng, size(X, 2))[1:k]
+            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
+        else
+            error("initialization strategy '$init' is not implemented")
+        end
     else
         error("method '$method' is not implemented.")
     end

@@ -6,7 +6,7 @@ using Statistics: mean
 using ..KMeansClustering: KMeansResult
 
 function simplekmeans(dataset::Matrix{Float64},
-    initialcentroids::Matrix{Float64},
+    initialcentroids::Matrix{Float64};
     init_method::Symbol,
     maxiter::Int,
     tol::Real)
