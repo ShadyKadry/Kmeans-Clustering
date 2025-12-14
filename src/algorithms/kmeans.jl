@@ -3,18 +3,25 @@ module KMeans
 using LinearAlgebra: norm
 using Statistics: mean
 
-function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64}, maxiter::Int, tol::Real)
+using ..KMeansClustering: KMeansResult
+
+function simplekmeans(dataset::Matrix{Float64},
+    initialcentroids::Matrix{Float64},
+    init_method::Symbol,
+    maxiter::Int,
+    tol::Real)
 
     d, N = size(dataset)
-    k = size(initialCentroids, 2)
+    k = size(initialcentroids, 2)
 
-    if d != size(initialCentroids, 1)
+    if d != size(initialcentroids, 1)
         error("dimensions of data and centroids do not match")
     end
 
     assignedto = Vector{Int}(undef, N)
-    centroids = initialCentroids
+    centroids = initialcentroids
     converged = false
+    lastiter = 0
 
     for iter in 1:maxiter
 
@@ -53,14 +60,21 @@ function simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64
 
         if norm(newcentroids - centroids) < tol
             converged = true
-            return centroids, assignedto, iter, converged
+            lastiter = iter
+            break
         else
             centroids = newcentroids
         end
 
     end
 
-    return centroids, assignedto, maxiter, converged
+    return KMeansResult(
+        centroids,
+        assignedto,
+        1.0,
+        converged ? lastiter : maxiter,
+        converged,
+        init_method)
 end
 
 end
