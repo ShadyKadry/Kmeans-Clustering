@@ -5,6 +5,29 @@ using Statistics: mean
 
 using ..KMeansClustering: KMeansResult
 
+"""
+    simplekmeans(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}; init_method::Symbol, maxiter::Int, tol::Real)
+
+Perform k-means clustering on a dataset following Lloyd's algorithm.
+In each iteration step, the mean of each cluster becomes the new centroid.
+
+# Arguments
+- `dataset::Matrix{Float64}`  
+    A `dxn` matrix where each column is a point and each row is a feature.
+- `initialcentroids::Matrix{Float64}`  
+    A `dxk` matrix containing the starting `k` centroids.
+
+# Keyword Arguments
+- `init_method::Symbol`  
+    Method for choosing initial medoids, e.g. :random, :kmeans++
+- `maxiter::Int`  
+    Maximum number of iterations.
+- `tol::Real`  
+    tolerance threshold to determine convergence.
+
+Returns a `KMeansResult`
+"""
+
 function simplekmeans(dataset::Matrix{Float64},
     initialcentroids::Matrix{Float64};
     init_method::Symbol,
