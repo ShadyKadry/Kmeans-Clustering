@@ -68,10 +68,18 @@ function simplekmeans(dataset::Matrix{Float64},
 
     end
 
+    # calculate inertia
+
+    dist = 0
+
+    for i in 1:k
+        dist += sum(norm.(eachcol(dataset[:, assignedto.==i] .- centroids[:, i])) .^ 2)
+    end
+
     return KMeansResult(
         centroids,
         assignedto,
-        1.0,
+        dist,
         converged ? lastiter : maxiter,
         converged,
         init_method)
