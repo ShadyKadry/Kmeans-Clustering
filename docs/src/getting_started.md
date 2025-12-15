@@ -44,7 +44,7 @@ Only one function is exposed:
 
         cluster_count,
         # Select the KMeans-method to use
-        method=:kmedoids,
+        method=:kmeans,
         # Select, how the initial centroids should be chosen
         init=:random,
         # Maximum number of iterations before the algorithm is aborted
