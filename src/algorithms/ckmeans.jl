@@ -35,7 +35,8 @@ function dc_asymp(dataset::Matrix{Float64},
   centroids = initialcentroids
   # a mapping from an index in the data set to its weight value in its cluster.
   weights = Vector{Real}(undef, N)
-  n_outer_iter:Int = maxiter
+  n_outer_iter::Int = maxiter
+  converged = false
   for iter in 1:maxiter
     # Step 1: assign points to nearest centroid
     for i in 1:N
