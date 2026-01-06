@@ -3,6 +3,6 @@
 
 
 ```@docs
-KMeansClustering.KMedoids.KMedoids_fit
+KMeansClustering.KMedoids.kmedoids_fit
 KMeansClustering.AlgorithmsKMeansPP.kmeanspp_init
 ```
