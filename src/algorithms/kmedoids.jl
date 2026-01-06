@@ -5,6 +5,18 @@ using DataStructures: DefaultDict
 
 using ..KMeansClustering: KMeansResult
 
+"""
+    KMedoids_Settings
+
+    Settings specific to the KMedoids algorithm
+
+    Fields:
+    - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `max_iter`: Maximum number of iterations to run before aborting
+    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+    - `rng`: Random Number Generator to use for generating the initial medoid centers
+    - `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
+"""
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
     max_iter::UInt32
