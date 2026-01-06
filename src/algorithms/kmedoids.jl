@@ -5,6 +5,18 @@ using DataStructures: DefaultDict
 
 using ..KMeansClustering: KMeansResult
 
+"""
+    KMedoids_Settings
+
+    Settings specific to the KMedoids algorithm
+
+    Fields:
+    - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `max_iter`: Maximum number of iterations to run before aborting
+    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+    - `rng`: Random Number Generator to use for generating the initial medoid centers
+    - `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
+"""
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
     max_iter::UInt32
@@ -141,7 +153,6 @@ function swap_and_recalculate_clusters(
 end
 
 function sum_cluster_distances(
-    self::KMedoids_Settings,
     cluster_dist::t_Cluster_Weights
 )
     return sum(values(cluster_dist))
@@ -158,8 +169,8 @@ function update_clusters(
     for idx in 1:self.max_iter
         cluster_dist_with_new_medoids = swap_and_recalculate_clusters(self, data, medoids, clusters, weights)
         
-        old_sum = sum_cluster_distances(self, weights)
-        new_sum = sum_cluster_distances(self, cluster_dist_with_new_medoids)
+        old_sum = sum_cluster_distances(weights)
+        new_sum = sum_cluster_distances(cluster_dist_with_new_medoids)
 
         if new_sum < old_sum && (old_sum - new_sum) > self.tol
             medoids = collect(t_Medoid_Idx, keys(cluster_dist_with_new_medoids))
