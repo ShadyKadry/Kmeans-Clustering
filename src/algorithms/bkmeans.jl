@@ -263,4 +263,6 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
     return centroids, assignedto, totaliters, converged
 end
 
+export bkmeans
+
 end
