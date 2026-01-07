@@ -4,7 +4,9 @@ using LinearAlgebra: norm
 using Statistics: mean
 using Random: rand
 
-# Helper: squared Euclidean distance between two vectors.
+"""
+Helper: squared Euclidean distance between two vectors.
+"""
 function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     s = 0.0
     @inbounds for i in 1:length(x)
@@ -14,10 +16,12 @@ function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     return s
 end
 
-# Helper: SSE (Sum of Squared Errors) for one cluster.
-# SSE measures how "spread out" a cluster is:
-#   SSE = sum over points in the cluster of squared distance to the centroid.
-# Larger SSE means the cluster is more "messy" and is a good candidate to split.
+"""
+Helper: SSE (Sum of Squared Errors) for one cluster.
+SSE measures how "spread out" a cluster is:
+  SSE = sum over points in the cluster of squared distance to the centroid.
+Larger SSE means the cluster is more "messy" and is a good candidate to split.
+"""
 function _cluster_sse(dataset::Matrix{Float64}, idxs::Vector{Int}, centroid::Vector{Float64})::Float64
     s = 0.0
     @inbounds for id in idxs
@@ -26,11 +30,13 @@ function _cluster_sse(dataset::Matrix{Float64}, idxs::Vector{Int}, centroid::Vec
     return s
 end
 
-# Helper: initialization for a 2-means split.
-# We pick:
-#   1) one random point as the first centroid
-#   2) the point farthest away from it as the second centroid
-# Input subset is a d×n matrix (each column is a point).
+"""
+Helper: initialization for a 2-means split.
+We pick:
+  1) one random point as the first centroid
+  2) the point farthest away from it as the second centroid
+Input subset is a d×n matrix (each column is a point).
+"""
 function _init_two_centroids(subset::Matrix{Float64})::Matrix{Float64}
     d, n = size(subset)
     if n < 2
@@ -59,8 +65,10 @@ function _init_two_centroids(subset::Matrix{Float64})::Matrix{Float64}
     return init
 end
 
-# Internal simple k-means.
-# NOTE: dataset is d×N and centroids are d×k (points and centroids are columns).
+"""
+Internal simple k-means.
+NOTE: dataset is d×N and centroids are d×k (points and centroids are columns).
+"""
 function _simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64}, maxiter::Int, tol::Real)
     d, N = size(dataset)
     k = size(initialCentroids, 2)
@@ -91,7 +99,9 @@ function _simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float6
             assignedto[i] = closestindex
         end
 
-        # 2. Recompute each centroid as the mean of its assigned points
+        """
+        2. Recompute each centroid as the mean of its assigned points
+        """
         newcentroids = Matrix{Float64}(undef, d, k)
 
         for j in 1:k
@@ -104,7 +114,9 @@ function _simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float6
             end
         end
 
-        # 3. Stop if centroids barely move
+        """
+        3. Stop if centroids barely move
+        """
         if norm(newcentroids - centroids) < tol
             centroids = newcentroids
             converged = true
@@ -128,15 +140,21 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
         error("k cannot be larger than the number of points (N=$N)")
     end
 
-    # Start with a single cluster containing all points
+    """
+    Start with a single cluster containing all points
+    """
     assignedto = ones(Int, N)
     centroids = reshape(vec(mean(dataset, dims=2)), d, 1)
 
-    # clusters[i] stores the global point indices that belong to cluster i
+    """
+    clusters[i] stores the global point indices that belong to cluster i
+    """
     clusters = Vector{Vector{Int}}(undef, 1)
     clusters[1] = collect(1:N)
 
-    # sse[i] stores the SSE value of cluster i (used to decide which cluster to split next)
+    """
+    sse[i] stores the SSE value of cluster i (used to decide which cluster to split next)
+    """
     sse = Vector{Float64}(undef, 1)
     sse[1] = _cluster_sse(dataset, clusters[1], centroids[:, 1])
 
@@ -146,7 +164,9 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
 
     while current_k < k
 
-        # Choose the cluster to split: the one with the largest SSE (and size > 1)
+        """
+        Choose the cluster to split: the one with the largest SSE (and size > 1)
+        """
         splitidx = 0
         bestval = -1.0
         for i in 1:current_k
@@ -156,15 +176,21 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             end
         end
         if splitidx == 0
-            # This happens if all clusters have exactly one point.
+            """
+            This happens if all clusters have exactly one point.
+            """
             error("Cannot bisect further: all clusters have size 1, but requested k=$k")
         end
 
-        # Extract the points of the chosen cluster into a smaller matrix subset
+        """
+        Extract the points of the chosen cluster into a smaller matrix subset
+        """
         idxs = clusters[splitidx]
         subset = dataset[:, idxs]
 
-        # Run multiple 2-means attempts and keep the best split (lowest SSE)
+        """
+        Run multiple 2-means attempts and keep the best split (lowest SSE)
+        """
         best_split_sse = Inf
         best_centroids2 = Matrix{Float64}(undef, d, 2)
         best_assign2 = Int[]
@@ -175,14 +201,18 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             init = _init_two_centroids(subset)
             c2, a2, it2, conv2 = _simplekmeans(subset, init, maxiter, tol)
 
-            # If one side becomes empty, this split is invalid; skip it.
+            """
+            If one side becomes empty, this split is invalid: skip it.
+            """
             n1 = count(==(1), a2)
             n2 = count(==(2), a2)
             if n1 == 0 || n2 == 0
                 continue
             end
 
-            # Compute SSE for the two new clusters
+            """
+            Compute SSE for the two new clusters
+            """
             idx1_local = findall(==(1), a2)
             idx2_local = findall(==(2), a2)
 
@@ -199,9 +229,13 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             end
         end
 
-        # Fallback if all tries failed
+        """
+        Fallback if all tries failed
+        """
         if isempty(best_assign2)
-            # Split the points into two halves.
+            """
+            Split the points into two halves
+            """
             m = length(idxs)
             half = m ÷ 2
             best_assign2 = vcat(fill(1, half), fill(2, m - half))
@@ -211,7 +245,9 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             best_conv = false
         end
 
-        # Convert local split labels (1/2 within subset) into global point index lists
+        """
+        Convert local split labels (1/2 within subset) into global point index lists
+        """
         idx1_global = Int[]
         idx2_global = Int[]
         for (localpos, globalid) in enumerate(idxs)
@@ -222,10 +258,14 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             end
         end
 
-        # The new cluster will get the next label number
+        """
+        The new cluster will get the next label number
+        """
         newlabel = current_k + 1
 
-        # Update global assignment vector assignedto
+        """
+        Update global assignment vector assignedto
+        """
         for id in idx1_global
             assignedto[id] = splitidx
         end
@@ -233,16 +273,22 @@ function bkmeans(dataset::Matrix{Float64}, k::Int, maxiter::Int, tol::Real; nsta
             assignedto[id] = newlabel
         end
 
-        # Update the stored cluster member lists
+        """
+        Update the stored cluster member lists
+        """
         clusters[splitidx] = idx1_global
         push!(clusters, idx2_global)
 
-        # Update the centroid matrix
-        # Replace centroid of the split cluster and append the new one
+        """
+        Update the centroid matrix
+        Replace centroid of the split cluster and append the new one
+        """
         centroids[:, splitidx] = best_centroids2[:, 1]
         centroids = hcat(centroids, best_centroids2[:, 2])
 
-        # Recompute SSE values for the affected clusters
+        """
+        Recompute SSE values for the affected clusters
+        """
         sse[splitidx] = _cluster_sse(dataset, clusters[splitidx], centroids[:, splitidx])
         push!(sse, _cluster_sse(dataset, clusters[end], centroids[:, end]))
 
