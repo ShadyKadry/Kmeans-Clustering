@@ -14,6 +14,7 @@ export kmeans, KMeansResult
 
 using .KMedoids: KMedoids_fit
 using .KMeans: simplekmeans
+using .BKMeans: bkmeans
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -59,6 +60,9 @@ function kmeans(X::AbstractMatrix{<:Real},
         else
             error("initialization strategy '$init' is not implemented")
         end
+    elseif method == :bkmeans 
+        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol) 
+        return KMeansResult(ce, as, to, co)
     else
         error("method '$method' is not implemented.")
     end
