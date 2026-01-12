@@ -1,3 +1,14 @@
+
+"""
+    KMeansClustering
+
+A Julia package for clustering algorithms, including K-Means, K-Medoids, K-Means++, BKmeans, and CKmeans.
+
+# Exported Functions
+- [`kmeans`](@ref): Perform K-Means clustering.
+# Usage
+julia> using KMeansClustering
+"""
 module KMeansClustering
 
 using Random
@@ -14,7 +25,9 @@ using .KMedoids: KMedoids_fit, KMedoidsAlgorithm
 
 export kmeans, KMeansResult
 
+using .KMedoids: kmedoids_fit
 using .KMeans: simplekmeans
+using .BKMeans: bkmeans
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -52,7 +65,7 @@ function kmeans(X::AbstractMatrix{<:Real},
 )
 
     if method == :kmedoids
-        return KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+        return kmedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
     elseif method == :kmeans
         if init == :random
             idx = randperm(rng, size(X, 2))[1:k]
@@ -60,6 +73,9 @@ function kmeans(X::AbstractMatrix{<:Real},
         else
             error("initialization strategy '$init' is not implemented")
         end
+    elseif method == :bkmeans 
+        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol) 
+        return KMeansResult(ce, as, to, co)
     else
         error("method '$method' is not implemented.")
     end

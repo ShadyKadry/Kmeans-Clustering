@@ -16,5 +16,5 @@ Pages   = ["index.md"]
 
 ```@autodocs
 Modules = [KMeansClustering]
-Order   = [:function, :type]
+Order   = [:module, :function, :type]
 ```
