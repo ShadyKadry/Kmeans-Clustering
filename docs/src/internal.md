@@ -3,7 +3,7 @@
 
 
 ```@docs
-KMeansClustering.KMedoids.KMedoids_fit
+KMeansClustering.KMedoids.kmedoids_fit
 KMeansClustering.AlgorithmsKMeansPP.kmeanspp_init
 KMeansClustering.KMedoids.KMedoids_Settings
 KMeansClustering.BKMeans._init_two_centroids

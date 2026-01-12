@@ -23,7 +23,7 @@ include("algorithms/ckmeans.jl")
 
 export kmeans, KMeansResult
 
-using .KMedoids: KMedoids_fit
+using .KMedoids: kmedoids_fit
 using .KMeans: simplekmeans
 using .BKMeans: bkmeans
 
@@ -63,7 +63,7 @@ function kmeans(X::AbstractMatrix{<:Real},
 )
 
     if method == :kmedoids
-        return KMedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+        return kmedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
     elseif method == :kmeans
         if init == :random
             idx = randperm(rng, size(X, 2))[1:k]
