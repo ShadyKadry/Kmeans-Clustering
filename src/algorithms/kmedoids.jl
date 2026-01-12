@@ -3,28 +3,23 @@ module KMedoids
 using Random
 using DataStructures: DefaultDict
 
-using ..KMeansClustering: KMeansResult, KMeansAlgorithm, kmeans
+using ..KMeansClustering: KMeansResult, KMeansAlgorithm
+
 
 """
-    KMedoids_Settings
+    KMedoidsAlgorithm
 
     Settings specific to the KMedoids algorithm
 
     Fields:
+    - `data`: Data matrix with features in rows and observations in columns
     - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `init_method`: Initialization method for selecting initial medoids (e.g., :random)
     - `max_iter`: Maximum number of iterations to run before aborting
     - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
     - `rng`: Random Number Generator to use for generating the initial medoid centers
     - `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
 """
-struct KMedoids_Settings{T<:Function}
-    n_clusters::UInt32
-    max_iter::UInt32
-    tol::Float32
-    rng::AbstractRNG
-    distance_fun::T
-end
-
 struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
     data::AbstractMatrix
     n_clusters::Integer
@@ -45,6 +40,15 @@ struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
     ) where {T<:Function}
         new{T}(data, n_clusters, init_method, max_iter, tol, rng, distance_fun)
     end
+end
+
+# Internal
+struct KMedoids_Settings{T<:Function}
+    n_clusters::UInt32
+    max_iter::UInt32
+    tol::Float32
+    rng::AbstractRNG
+    distance_fun::T
 end
 
 t_Medoid_Idx = UInt32
@@ -259,7 +263,8 @@ Implementation is based on the description from:
     Random number generator.
 - `distance_fun::Function`
     A function `dist(a, b)` returning the distance between two sample vectors.
-    Default is squared Euclidean distance.
+    Default is squared Euclidean distance. Must return a single real number where
+    greater values represent greater distnaces
 
 Returns a `KMeansResult`
 """
@@ -285,12 +290,13 @@ function kmedoids_fit(
     )
 end
 
-function kmeans(
+# Single struct overload
+function kmedoids_fit(
     settings::KMedoidsAlgorithm
 )
-    KMedoids_fit(
+    kmedoids_fit(
         settings.data,
-        settings.medoids,
+        settings.n_clusters,
         init_method=settings.init_method,
         max_iter=settings.max_iter,
         tol=settings.tol,
@@ -299,6 +305,6 @@ function kmeans(
     )
 end
 
-export kmedoids_fit
+export KMedoidsAlgorithm, kmedoids_fit
 
 end

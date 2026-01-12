@@ -10,9 +10,8 @@ cluster_count = 4 # Number of clusters to separate the dataset into
 settings = KMeansClustering.KMedoidsAlgorithm(
     X,                  # Points, column-wise: rows are the features, cols are the points
     cluster_count;
-    method=:kmedoids,   # Select the KMeans-method to use
-    init=:random,
-    maxiter=50,
+    init_method=:random,
+    max_iter=50,
     tol=1e-4,           # Tolerance of improvement between each iteration.
     rng=my_rng
 )
