@@ -103,7 +103,7 @@ settings = KMeansClustering.KMedoidsAlgorithm(
 result = KMeansClustering.kmeans(settings)
 ```
 
-See also: [`kmeans(X, k; method=:kmedoids, ...)`](@ref)
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)`](@ref)
 """
 function kmeans(
     settings::KMedoidsAlgorithm
