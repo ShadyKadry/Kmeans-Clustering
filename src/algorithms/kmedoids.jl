@@ -3,7 +3,7 @@ module KMedoids
 using Random
 using DataStructures: DefaultDict
 
-using ..KMeansClustering: KMeansResult
+using ..KMeansClustering: KMeansResult, KMeansAlgorithm, kmeans
 
 """
     KMedoids_Settings
@@ -23,6 +23,28 @@ struct KMedoids_Settings{T<:Function}
     tol::Float32
     rng::AbstractRNG
     distance_fun::T
+end
+
+struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
+    data::AbstractMatrix
+    n_clusters::Integer
+    init_method::Symbol
+    max_iter::Integer
+    tol::Real
+    rng::AbstractRNG
+    distance_fun::T
+
+    function KMedoidsAlgorithm(
+        data::AbstractMatrix,
+        n_clusters::Integer;
+        init_method::Symbol = :random,
+        max_iter::Integer = 100,
+        tol::Real = 10e-4,
+        rng::AbstractRNG = Random.GLOBAL_RNG,
+        distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
+    ) where {T<:Function}
+        new{T}(data, n_clusters, init_method, max_iter, tol, rng, distance_fun)
+    end
 end
 
 t_Medoid_Idx = UInt32
@@ -168,7 +190,7 @@ function update_clusters(
     oidx = 0
     for idx in 1:self.max_iter
         cluster_dist_with_new_medoids = swap_and_recalculate_clusters(self, data, medoids, clusters, weights)
-        
+
         old_sum = sum_cluster_distances(weights)
         new_sum = sum_cluster_distances(cluster_dist_with_new_medoids)
 
@@ -238,22 +260,22 @@ Implementation is based on the description from:
 <http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html>
 
 # Arguments
-- `data::AbstractMatrix`  
+- `data::AbstractMatrix`
     A matrix of size `(n_features, n_samples)` where **columns are data points**
     and **rows are features**.
-- `n_clusters::Integer`  
+- `n_clusters::Integer`
     Number of clusters (i.e. number of medoids to compute).
 
 # Keyword Arguments
-- `init_method::Symbol = :random`  
+- `init_method::Symbol = :random`
     Method for choosing initial medoids. Currently supported: `:random`.
-- `max_iter::Integer = 100`  
+- `max_iter::Integer = 100`
     Maximum number of refinement iterations.
-- `tol::Real = 1e-4`  
+- `tol::Real = 1e-4`
     Minimum improvement required for convergence.
-- `rng::AbstractRNG = Random.GLOBAL_RNG`  
+- `rng::AbstractRNG = Random.GLOBAL_RNG`
     Random number generator.
-- `distance_fun::Function`  
+- `distance_fun::Function`
     A function `dist(a, b)` returning the distance between two sample vectors.
     Default is squared Euclidean distance.
 
@@ -281,7 +303,20 @@ function KMedoids_fit(
     )
 end
 
+function kmeans(
+    settings::KMedoidsAlgorithm
+)
+    KMedoids_fit(
+        settings.data,
+        settings.medoids,
+        init_method=settings.init_method,
+        max_iter=settings.max_iter,
+        tol=settings.tol,
+        rng=settings.rng,
+        distance_fun=settings.distance_fun
+    )
+end
 
-export KMedoids_fit
+export KMedoidsAlgorithm, KMedoids_fit
 
 end

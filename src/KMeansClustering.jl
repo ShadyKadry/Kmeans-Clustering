@@ -10,9 +10,10 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
+using .KMedoids: KMedoids_fit, KMedoidsAlgorithm
+
 export kmeans, KMeansResult
 
-using .KMedoids: KMedoids_fit
 using .KMeans: simplekmeans
 
 """
@@ -37,7 +38,7 @@ Available algorithms:
 
 - K-Medoids (method=:kmedoids):
     As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
-    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating 
+    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
     artificial ones.
 
 """
