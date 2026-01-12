@@ -233,7 +233,7 @@ function kmedoids_fit(
 end
 
 """
-    KMedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
+    kmedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
                  tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
 
 Perform K-Medoids clustering on a dataset.
