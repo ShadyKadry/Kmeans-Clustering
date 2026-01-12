@@ -7,16 +7,15 @@ my_rng = MersenneTwister(1234) # Number Generator with fixed seed
 X = rand(my_rng, 2, 200) # Create an artificial dataset
 cluster_count = 4 # Number of clusters to separate the dataset into
 
-settings = KMeansClustering.KMedoidsAlgorithm(
+clustering_result = KMeansClustering.kmeans(
     X,                  # Points, column-wise: rows are the features, cols are the points
-    cluster_count;
-    init_method=:random,
-    max_iter=50,
+    cluster_count,
+    method=:kmedoids,   # Select the KMeans-method to use
+    init=:random,
+    maxiter=50,
     tol=1e-4,           # Tolerance of improvement between each iteration.
-    rng=my_rng
+    rng=my_rng          # Random Number Generator to use
 )
-
-clustering_result = KMeansClustering.kmeans(settings)
 
 @info "Required Iterations: $(clustering_result.iterations)"
 @info "Converged: $(clustering_result.converged)"
