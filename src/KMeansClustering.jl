@@ -11,8 +11,6 @@ julia> using KMeansClustering
 """
 module KMeansClustering
 
-using Random
-
 include("types.jl")
 include("utils.jl")
 include("algorithms/kmeans.jl")
@@ -21,13 +19,14 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
-using .KMedoids: KMedoidsAlgorithm, kmeans
+using Random
 
-export kmeans, KMeansResult
-
-using .KMedoids: kmedoids_fit
+using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
 using .KMeans: simplekmeans
 using .BKMeans: bkmeans
+
+
+export kmeans, KMeansResult
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
