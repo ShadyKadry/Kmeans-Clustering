@@ -1,3 +1,14 @@
+
+"""
+    KMeansClustering
+
+A Julia package for clustering algorithms, including K-Means, K-Medoids, K-Means++, BKmeans, and CKmeans.
+
+# Exported Functions
+- [`kmeans`](@ref): Perform K-Means clustering.
+# Usage
+julia> using KMeansClustering
+"""
 module KMeansClustering
 
 using Random
@@ -38,7 +49,7 @@ Available algorithms:
 
 - K-Medoids (method=:kmedoids):
     As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
-    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating 
+    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
     artificial ones.
 
 """
