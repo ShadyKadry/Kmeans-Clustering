@@ -80,7 +80,7 @@ function simplekmeans(dataset::AbstractMatrix{<:Real},
 
         # check for convergence
 
-        if norm(newcentroids - centroids) < tol
+        if norm(newcentroids - centroids) < tol * sqrt(k * d)
             converged = true
             lastiter = iter
             break
