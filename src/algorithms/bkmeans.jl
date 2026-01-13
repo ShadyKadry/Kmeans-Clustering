@@ -4,9 +4,7 @@ using LinearAlgebra: norm
 using Statistics: mean
 using Random: rand
 
-"""
-Helper: squared Euclidean distance between two vectors.
-"""
+
 function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     s = 0.0
     @inbounds for i in 1:length(x)
@@ -16,12 +14,10 @@ function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     return s
 end
 
-"""
-Helper: SSE (Sum of Squared Errors) for one cluster.
-SSE measures how "spread out" a cluster is:
-  SSE = sum over points in the cluster of squared distance to the centroid.
-Larger SSE means the cluster is more "messy" and is a good candidate to split.
-"""
+# Helper: SSE (Sum of Squared Errors) for one cluster.
+# SSE measures how "spread out" a cluster is:
+#   SSE = sum over points in the cluster of squared distance to the centroid.
+# Larger SSE means the cluster is more "messy" and is a good candidate to split.
 function _cluster_sse(dataset::Matrix{Float64}, idxs::Vector{Int}, centroid::Vector{Float64})::Float64
     s = 0.0
     @inbounds for id in idxs
@@ -30,13 +26,11 @@ function _cluster_sse(dataset::Matrix{Float64}, idxs::Vector{Int}, centroid::Vec
     return s
 end
 
-"""
-Helper: initialization for a 2-means split.
-We pick:
-  1) one random point as the first centroid
-  2) the point farthest away from it as the second centroid
-Input subset is a d×n matrix (each column is a point).
-"""
+# Helper: initialization for a 2-means split.
+# We pick:
+#   1) one random point as the first centroid
+#   2) the point farthest away from it as the second centroid
+# Input subset is a d×n matrix (each column is a point).
 function _init_two_centroids(subset::Matrix{Float64})::Matrix{Float64}
     d, n = size(subset)
     if n < 2
@@ -65,10 +59,9 @@ function _init_two_centroids(subset::Matrix{Float64})::Matrix{Float64}
     return init
 end
 
-"""
-Internal simple k-means.
-NOTE: dataset is d×N and centroids are d×k (points and centroids are columns)
-"""
+
+# Internal simple k-means.
+# NOTE: dataset is d×N and centroids are d×k (points and centroids are columns)
 function _simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float64}, maxiter::Int, tol::Real)
     d, N = size(dataset)
     k = size(initialCentroids, 2)
@@ -111,7 +104,7 @@ function _simplekmeans(dataset::Matrix{Float64}, initialCentroids::Matrix{Float6
                 newcentroids[:, j] = vec(mean(dataset[:, indices], dims=2))
             end
         end
-        
+
         # 3. Stop if centroids barely move
         if norm(newcentroids - centroids) < tol
             centroids = newcentroids

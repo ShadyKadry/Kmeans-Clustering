@@ -26,7 +26,7 @@ using .KMeans: simplekmeans
 using .BKMeans: bkmeans
 
 
-export kmeans, KMeansResult
+export kmeans, KMeansResult, KMedoidsAlgorithm
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -54,11 +54,12 @@ Available algorithms:
     artificial ones.
 
 """
-function kmeans(X::AbstractMatrix{<:Real},
+function kmeans(
+    X::AbstractMatrix{<:Real},
     k::Integer;
     method::Symbol=:kmeans,
     init::Symbol=:random,
-    maxiter::Int=1000,
+    maxiter::Int=100,
     tol::Real=1e-4,
     rng::AbstractRNG=Random.GLOBAL_RNG
 )
@@ -82,12 +83,12 @@ end
 
 
 """
-    kmeans(settings::KMedoidsAlgorithm)
+    kmeans(KMedoidsAlgorithm)
 
     Entry point for K-Medoids clustering using a settings object instead.
 
 # Arguments
-- `settings::KMedoidsAlgorithm`: Settings object. See object description for more information
+- `KMedoidsAlgorithm`: Settings object. See object description for more information
 
 # Returns
 A `KMeansResult` containing the clustering results.
