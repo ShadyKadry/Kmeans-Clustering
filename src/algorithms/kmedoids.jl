@@ -3,20 +3,46 @@ module KMedoids
 using Random
 using DataStructures: DefaultDict
 
-using ..KMeansClustering: KMeansResult
+using ..KMeansClustering: KMeansResult, KMeansAlgorithm
+
 
 """
-    KMedoids_Settings
+    KMedoidsAlgorithm
 
     Settings specific to the KMedoids algorithm
 
     Fields:
+    - `data`: Data matrix with features in rows and observations in columns
     - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `init_method`: Initialization method for selecting initial medoids (e.g., :random)
     - `max_iter`: Maximum number of iterations to run before aborting
     - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
     - `rng`: Random Number Generator to use for generating the initial medoid centers
     - `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
 """
+struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
+    data::AbstractMatrix
+    n_clusters::Integer
+    init_method::Symbol
+    max_iter::Integer
+    tol::Real
+    rng::AbstractRNG
+    distance_fun::T
+
+    function KMedoidsAlgorithm(
+        data::AbstractMatrix,
+        n_clusters::Integer;
+        init_method::Symbol = :random,
+        max_iter::Integer = 100,
+        tol::Real = 10e-4,
+        rng::AbstractRNG = Random.GLOBAL_RNG,
+        distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
+    ) where {T<:Function}
+        new{T}(data, n_clusters, init_method, max_iter, tol, rng, distance_fun)
+    end
+end
+
+# Internal
 struct KMedoids_Settings{T<:Function}
     n_clusters::UInt32
     max_iter::UInt32
@@ -207,7 +233,7 @@ function kmedoids_fit(
 end
 
 """
-    KMedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
+    kmedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
                  tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
 
 Perform K-Medoids clustering on a dataset.
@@ -237,7 +263,8 @@ Implementation is based on the description from:
     Random number generator.
 - `distance_fun::Function`
     A function `dist(a, b)` returning the distance between two sample vectors.
-    Default is squared Euclidean distance.
+    Default is squared Euclidean distance. Must return a single real number where
+    greater values represent greater distnaces
 
 Returns a `KMeansResult`
 """
@@ -263,7 +290,21 @@ function kmedoids_fit(
     )
 end
 
+# Single struct overload
+function kmedoids_fit(
+    settings::KMedoidsAlgorithm
+)
+    kmedoids_fit(
+        settings.data,
+        settings.n_clusters,
+        init_method=settings.init_method,
+        max_iter=settings.max_iter,
+        tol=settings.tol,
+        rng=settings.rng,
+        distance_fun=settings.distance_fun
+    )
+end
 
-export kmedoids_fit
+export KMedoidsAlgorithm, kmedoids_fit
 
 end

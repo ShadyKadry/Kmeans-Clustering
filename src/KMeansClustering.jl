@@ -11,8 +11,6 @@ julia> using KMeansClustering
 """
 module KMeansClustering
 
-using Random
-
 include("types.jl")
 include("utils.jl")
 include("algorithms/kmeans.jl")
@@ -21,11 +19,14 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
-export kmeans, KMeansResult
+using Random
 
-using .KMedoids: kmedoids_fit
+using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
 using .KMeans: simplekmeans
 using .BKMeans: bkmeans
+
+
+export kmeans, KMeansResult
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -71,12 +72,44 @@ function kmeans(X::AbstractMatrix{<:Real},
         else
             error("initialization strategy '$init' is not implemented")
         end
-    elseif method == :bkmeans 
-        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol) 
+    elseif method == :bkmeans
+        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
     else
         error("method '$method' is not implemented.")
     end
 end
+
+
+"""
+    kmeans(settings::KMedoidsAlgorithm)
+
+    Entry point for K-Medoids clustering using a settings object instead.
+
+# Arguments
+- `settings::KMedoidsAlgorithm`: Settings object. See object description for more information
+
+# Returns
+A `KMeansResult` containing the clustering results.
+
+# Example
+```julia
+settings = KMeansClustering.KMedoidsAlgorithm(
+    X,                  # Points, column-wise: rows are the features, cols are the points
+    cluster_count;
+    init_method=:random,
+    max_iter=50,
+)
+result = KMeansClustering.kmeans(settings)
+```
+
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)`](@ref)
+"""
+function kmeans(
+    settings::KMedoidsAlgorithm
+)
+    kmedoids_fit(settings)
+end
+
 
 end # module

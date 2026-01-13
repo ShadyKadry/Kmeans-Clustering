@@ -21,14 +21,14 @@ clustering_result = KMeansClustering.kmeans(
 @info "Converged: $(clustering_result.converged)"
 
 scatter(
-    X[1, :], 
-    X[2, :], 
-    group=clustering_result.assignments, 
+    X[1, :],
+    X[2, :],
+    group=clustering_result.assignments,
     legend=false
 )
 
 scatter!(
-    clustering_result.centers[1, :], 
+    clustering_result.centers[1, :],
     clustering_result.centers[2, :],
     markersize=8,
     marker=:star,

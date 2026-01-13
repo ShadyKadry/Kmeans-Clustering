@@ -4,7 +4,7 @@ CurrentModule = KMeansClustering
 
 # KMeansClustering
 
-Documentation for [KMeansClustering](https://github.com/markandre01/KMeansClustering.jl).
+Documentation for [KMeansClustering](https://github.com/ShadyKadry/Kmeans-Clustering).
 
 ```@meta
 CurrentModule = KMeansClustering
