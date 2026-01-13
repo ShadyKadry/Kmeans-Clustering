@@ -6,15 +6,15 @@ using Statistics: mean
 using ..KMeansClustering: KMeansResult
 
 """
-    simplekmeans(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}; init_method::Symbol, maxiter::Int, tol::Real)
+    simplekmeans(dataset::AbstractMatrix{<:Real}, initialcentroids::AbstractMatrix{<:Real}; init_method::Symbol, maxiter::Int, tol::Real)
 
 Perform k-means clustering on a dataset following Lloyd's algorithm.
 In each iteration step, the mean of each cluster becomes the new centroid.
 
 # Arguments
-- `dataset::Matrix{Float64}`  
+- `dataset::AbstractMatrix{<:Real}`  
     A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::Matrix{Float64}`  
+- `initialcentroids::AbstractMatrix{<:Real}`  
     A `dxk` matrix containing the starting `k` centroids.
 
 # Keyword Arguments
@@ -27,9 +27,8 @@ In each iteration step, the mean of each cluster becomes the new centroid.
 
 Returns a `KMeansResult`
 """
-
-function simplekmeans(dataset::Matrix{Float64},
-    initialcentroids::Matrix{Float64};
+function simplekmeans(dataset::AbstractMatrix{<:Real},
+    initialcentroids::AbstractMatrix{<:Real};
     init_method::Symbol,
     maxiter::Int,
     tol::Real)
@@ -75,7 +74,7 @@ function simplekmeans(dataset::Matrix{Float64},
             if isempty(indices)
                 newcentroids[:, i] = centroids[:, i]
             else
-                newcentroids[:, i] = mean(dataset[:, indices], dims=2)
+                newcentroids[:, i] = vec(mean(dataset[:, indices], dims=2))
             end
         end
 
