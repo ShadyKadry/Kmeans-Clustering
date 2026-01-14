@@ -224,7 +224,7 @@ function kmedoids_fit(
         Float64(inertia),
         iterations,
         converged,
-        init_method
+        :random
     )
 end
 
