@@ -5,6 +5,7 @@ using Statistics: mean
 using Random: rand
 
 
+# Helper: squared Euclidean distance between two vectors.
 function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     s = 0.0
     @inbounds for i in 1:length(x)

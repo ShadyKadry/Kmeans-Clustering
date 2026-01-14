@@ -65,7 +65,7 @@ function kmeans(
 )
 
     if method == :kmedoids
-        return kmedoids_fit(X, k, init_method=init, max_iter=maxiter, tol=tol, rng=rng)
+        return kmedoids_fit(X, k, max_iter=maxiter, tol=tol, rng=rng)
     elseif method == :kmeans
         if init == :random
             idx = randperm(rng, size(X, 2))[1:k]
