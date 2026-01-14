@@ -14,7 +14,6 @@ using ..KMeansClustering: KMeansResult, KMeansAlgorithm
     Fields:
     - `data`: Data matrix with features in rows and observations in columns
     - `n_clusters`: Number of clusters that the dataset should be split up into
-    - `init_method`: Initialization method for selecting initial medoids (e.g., :random)
     - `max_iter`: Maximum number of iterations to run before aborting
     - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
     - `rng`: Random Number Generator to use for generating the initial medoid centers
@@ -23,7 +22,6 @@ using ..KMeansClustering: KMeansResult, KMeansAlgorithm
 struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
     data::AbstractMatrix
     n_clusters::Integer
-    init_method::Symbol
     max_iter::Integer
     tol::Real
     rng::AbstractRNG
@@ -32,13 +30,12 @@ struct KMedoidsAlgorithm{T<:Function} <: KMeansAlgorithm
     function KMedoidsAlgorithm(
         data::AbstractMatrix,
         n_clusters::Integer;
-        init_method::Symbol = :random,
         max_iter::Integer = 100,
         tol::Real = 10e-4,
         rng::AbstractRNG = Random.GLOBAL_RNG,
         distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
     ) where {T<:Function}
-        new{T}(data, n_clusters, init_method, max_iter, tol, rng, distance_fun)
+        new{T}(data, n_clusters, max_iter, tol, rng, distance_fun)
     end
 end
 
@@ -195,7 +192,6 @@ end
 function kmedoids_fit(
     data::AbstractMatrix,
     initial_medoids::t_Medoid_Array;
-    init_method::Symbol=:random,
     max_iter::Integer=100,
     tol::Real=10e-4,
     rng::AbstractRNG=Random.GLOBAL_RNG,
@@ -228,50 +224,47 @@ function kmedoids_fit(
         Float64(inertia),
         iterations,
         converged,
-        init_method
+        :random
     )
 end
 
-"""
-    kmedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
-                 tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
-
-Perform K-Medoids clustering on a dataset.
-
-K-Medoids is a clustering algorithm similar to k-means, but cluster centers
-(*medoids*) are always chosen from actual data points, making the algorithm more
-robust to noise and outliers.
-
-Implementation is based on the description from:
-<http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html>
-
-# Arguments
-- `data::AbstractMatrix`
-    A matrix of size `(n_features, n_samples)` where **columns are data points**
-    and **rows are features**.
-- `n_clusters::Integer`
-    Number of clusters (i.e. number of medoids to compute).
-
-# Keyword Arguments
-- `init_method::Symbol = :random`
-    Method for choosing initial medoids. Currently supported: `:random`.
-- `max_iter::Integer = 100`
-    Maximum number of refinement iterations.
-- `tol::Real = 1e-4`
-    Minimum improvement required for convergence.
-- `rng::AbstractRNG = Random.GLOBAL_RNG`
-    Random number generator.
-- `distance_fun::Function`
-    A function `dist(a, b)` returning the distance between two sample vectors.
-    Default is squared Euclidean distance. Must return a single real number where
-    greater values represent greater distnaces
-
-Returns a `KMeansResult`
-"""
+#     kmedoids_fit(data, n_clusters; init_method=:random, max_iter=100,
+#                  tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
+#
+# Perform K-Medoids clustering on a dataset.
+#
+# K-Medoids is a clustering algorithm similar to k-means, but cluster centers
+# (*medoids*) are always chosen from actual data points, making the algorithm more
+# robust to noise and outliers.
+#
+# Implementation is based on the description from:
+# <http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html>
+#
+# # Arguments
+# - `data::AbstractMatrix`
+#     A matrix of size `(n_features, n_samples)` where **columns are data points**
+#     and **rows are features**.
+# - `n_clusters::Integer`
+#     Number of clusters (i.e. number of medoids to compute).
+#
+# # Keyword Arguments
+# - `init_method::Symbol = :random`
+#     Method for choosing initial medoids. Currently supported: `:random`.
+# - `max_iter::Integer = 100`
+#     Maximum number of refinement iterations.
+# - `tol::Real = 1e-4`
+#     Minimum improvement required for convergence.
+# - `rng::AbstractRNG = Random.GLOBAL_RNG`
+#     Random number generator.
+# - `distance_fun::Function`
+#     A function `dist(a, b)` returning the distance between two sample vectors.
+#     Default is squared Euclidean distance. Must return a single real number where
+#     greater values represent greater distnaces
+#
+# Returns a `KMeansResult`
 function kmedoids_fit(
     data::AbstractMatrix,
     n_clusters::Integer;
-    init_method::Symbol=:random,
     max_iter::Integer=100,
     tol::Real=1e-4,
     rng::AbstractRNG=Random.GLOBAL_RNG,
@@ -282,7 +275,6 @@ function kmedoids_fit(
     return kmedoids_fit(
         data,
         medoids,
-        init_method=init_method,
         max_iter=max_iter,
         tol=tol,
         rng=rng,
@@ -297,7 +289,6 @@ function kmedoids_fit(
     kmedoids_fit(
         settings.data,
         settings.n_clusters,
-        init_method=settings.init_method,
         max_iter=settings.max_iter,
         tol=settings.tol,
         rng=settings.rng,
