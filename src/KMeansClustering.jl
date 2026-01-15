@@ -24,6 +24,8 @@ using Random
 using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
 using .KMeans: simplekmeans
 using .BKMeans: bkmeans
+using .AlgorithmsKMeansPP: kmeanspp_init
+
 
 
 export kmeans, KMeansResult, KMedoidsAlgorithm
@@ -67,12 +69,21 @@ function kmeans(
     if method == :kmedoids
         return kmedoids_fit(X, k, max_iter=maxiter, tol=tol, rng=rng)
     elseif method == :kmeans
+        n = size(X, 2)
+        if k < 1 || k > n
+            throw(ArgumentError("k must be between 1 and number of observations (size(X,2))=$n, got $k"))
+        end
+
         if init == :random
-            idx = randperm(rng, size(X, 2))[1:k]
+            idx = randperm(rng, n)[1:k]
+            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
+        elseif init == :kmeanspp
+            idx = kmeanspp_init(X, k; rng=rng)
             return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
         else
             error("initialization strategy '$init' is not implemented")
         end
+
     elseif method == :bkmeans
         ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
