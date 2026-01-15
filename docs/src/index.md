@@ -4,7 +4,7 @@ CurrentModule = KMeansClustering
 
 # KMeansClustering
 
-Documentation for [KMeansClustering](https://github.com/markandre01/KMeansClustering.jl).
+Documentation for [KMeansClustering](https://github.com/ShadyKadry/Kmeans-Clustering).
 
 ```@meta
 CurrentModule = KMeansClustering
@@ -16,5 +16,5 @@ Pages   = ["index.md"]
 
 ```@autodocs
 Modules = [KMeansClustering]
-Order   = [:function, :type]
+Order   = [:module, :function, :type]
 ```
