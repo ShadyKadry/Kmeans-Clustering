@@ -2,8 +2,29 @@ module KMeans
 
 using LinearAlgebra: norm
 using Statistics: mean
+using Random
 
-using ..KMeansClustering: KMeansResult
+using ..KMeansClustering: KMeansResult, KMeansAlgorithm
+
+struct SimpleKMeansAlgorithm <: KMeansAlgorithm
+    data::AbstractMatrix
+    n_clusters::Integer
+    init_method::Symbol
+    max_iter::Integer
+    tol::Real
+    rng::AbstractRNG
+
+    function SimpleKMeansAlgorithm(
+        data::AbstractMatrix,
+        n_clusters::Integer;
+        init_method::Symbol=:random,
+        max_iter::Integer=100,
+        tol::Real=10e-4,
+        rng::AbstractRNG=Random.GLOBAL_RNG
+    )
+        new(data, n_clusters, init_method, max_iter, tol, rng)
+    end
+end
 
 """
     simplekmeans(dataset::AbstractMatrix{<:Real}, initialcentroids::AbstractMatrix{<:Real}; init_method::Symbol, maxiter::Int, tol::Real)
@@ -105,6 +126,19 @@ function simplekmeans(dataset::AbstractMatrix{<:Real},
         converged ? lastiter : maxiter,
         converged,
         init_method)
+end
+
+# Single struct overload
+function simplekmeans(
+    settings::SimpleKMeansAlgorithm,
+    initialcentroids::AbstractMatrix
+)
+    simplekmeans(
+        settings.data,
+        initialcentroids;
+        init_method=settings.init_method,
+        maxiter=settings.max_iter,
+        tol=settings.tol)
 end
 
 end

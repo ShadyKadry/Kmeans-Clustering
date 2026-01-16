@@ -22,8 +22,9 @@ include("algorithms/ckmeans.jl")
 using Random
 
 using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
-using .KMeans: simplekmeans
+using .KMeans: SimpleKMeansAlgorithm, simplekmeans
 using .BKMeans: bkmeans
+using .AlgorithmsKMeansPP: kmeanspp_init
 
 
 export kmeans, KMeansResult
@@ -111,5 +112,21 @@ function kmeans(
     kmedoids_fit(settings)
 end
 
+function kmeans(
+    settings::SimpleKMeansAlgorithm
+)
+    X = settings.data
+    k = settings.n_clusters
+    if settings.init_method == :random
+        idx = randperm(settings.rng, size(X, 2))[1:k]
+    elseif settings.init_method == :kmeanspp
+        idx = kmeanspp_init(X, k; rng=settings.rng)
+    else
+        error("initialization strategy '$settings.init_method' is not implemented")
+    end
+
+    simplekmeans(settings, X[:, idx])
+
+end
 
 end # module
