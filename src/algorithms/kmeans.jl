@@ -27,7 +27,11 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
 end
 
 """
-    simplekmeans(dataset::AbstractMatrix{<:Real}, initialcentroids::AbstractMatrix{<:Real}; init_method::Symbol, maxiter::Int, tol::Real)
+    simplekmeans(dataset::AbstractMatrix{<:Real}, 
+                 initialcentroids::AbstractMatrix{<:Real}; 
+                 init_method::Symbol=:random,
+                 maxiter::Int=100,
+                 tol::Real=10e-4)
 
 Perform k-means clustering on a dataset following Lloyd's algorithm.
 In each iteration step, the mean of each cluster becomes the new centroid.
@@ -50,9 +54,9 @@ Returns a `KMeansResult`
 """
 function simplekmeans(dataset::AbstractMatrix{<:Real},
     initialcentroids::AbstractMatrix{<:Real};
-    init_method::Symbol,
-    maxiter::Int,
-    tol::Real)
+    init_method::Symbol=:random,
+    maxiter::Int=100,
+    tol::Real=10e-4)
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
