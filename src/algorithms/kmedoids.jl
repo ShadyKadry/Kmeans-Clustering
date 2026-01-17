@@ -1,4 +1,4 @@
-using Random: AbstractRNG, GLOBAL_RNG
+using Random: AbstractRNG, GLOBAL_RNG, randperm
 using DataStructures: DefaultDict
 
 using ..KMeansClustering: KMeansResult, KMeansAlgorithm
