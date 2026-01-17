@@ -10,7 +10,7 @@ A Julia package for clustering algorithms, including K-Means, K-Medoids, K-Means
 julia> using KMeansClustering
 """
 module KMeansClustering
-using Random: AbstractRNG, GLOBAL_RNG
+using Random: AbstractRNG, GLOBAL_RNG, randperm
 
 include("types.jl")
 include("algorithms/kmeans.jl")
@@ -55,7 +55,7 @@ function kmeans(
     init::Symbol=:random,
     maxiter::Int=100,
     tol::Real=1e-4,
-    rng::AbstractRNG=Random.GLOBAL_RNG
+    rng::AbstractRNG=GLOBAL_RNG
 )
 
     if method == :kmedoids
