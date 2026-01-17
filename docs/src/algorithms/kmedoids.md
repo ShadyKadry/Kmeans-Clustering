@@ -102,26 +102,7 @@ result = kmeans(data, 3, method=:kmedoids, maxiter=100, tol=1e-4)
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
-println("Inertia: ", result.totalcost)
-```
-
-### Example 2: Reproducible Results
-
-```julia
-using KMeansClustering
-using Random
-
-X = rand(5, 200)  # 5 features, 200 observations
-
-# Set seed for reproducibility
-rng = MersenneTwister(42)
-
-result1 = kmeans(X, 4, method=:kmedoids, rng=rng)
-rng = MersenneTwister(42)
-result2 = kmeans(X, 4, method=:kmedoids, rng=rng)
-
-# Results will be identical
-@assert result1.assignments == result2.assignments
+println("Inertia: ", result.inertia)
 ```
 
 ### Example 3: Custom Distance Metric
@@ -150,33 +131,6 @@ settings = KMedoidsAlgorithm(
 result = kmeans(settings)
 ```
 
-## Comparison with K-Means
-
-| Aspect | K-Means | K-Medoids |
-|--------|---------|-----------|
-| Cluster centers | Computed centroids (can be artificial) | Actual data points (medoids) |
-| Robustness to outliers | Sensitive | More robust |
-| Distance metrics | Typically Euclidean | Any distance metric |
-| Computational complexity | O(kni) per iteration | O(k(n-k)²) per iteration |
-| Interpretability | Centroids may not be real observations | Medoids are real observations |
-| Memory usage | Lower | Higher |
-
-## When to Use K-Medoids
-
-K-Medoids is particularly well-suited for:
-
-- **Datasets with outliers**: When robustness to extreme values is important
-- **Non-Euclidean spaces**: When using custom distance metrics (e.g., Manhattan, cosine)
-- **Categorical data**: When combined with appropriate distance functions
-- **Interpretability requirements**: When cluster representatives must be actual observations
-- **Small to medium datasets**: Where computational cost is acceptable
-
 ## References
 
 - E.M. Mirkes, "K-means and K-medoids applet", University of Leicester, 2011. [http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
-- Kaufman, L. and Rousseeuw, P.J. (1987), "Clustering by means of Medoids", in Statistical Data Analysis Based on the L1–Norm and Related Methods, edited by Y. Dodge, North-Holland, 405–416.
-
-## See Also
-
-- [`kmeans`](@ref): Main clustering function
-- [`KMeansResult`](@ref): Result object documentation
