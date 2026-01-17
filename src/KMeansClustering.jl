@@ -10,23 +10,17 @@ A Julia package for clustering algorithms, including K-Means, K-Medoids, K-Means
 julia> using KMeansClustering
 """
 module KMeansClustering
+using Random: AbstractRNG, GLOBAL_RNG
 
 include("types.jl")
-include("utils.jl")
 include("algorithms/kmeans.jl")
 include("algorithms/kmeanspp.jl")
 include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
-using Random
-
-using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
 using .KMeans: simplekmeans
 using .BKMeans: bkmeans
-
-
-export kmeans, KMeansResult, KMedoidsAlgorithm
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -81,36 +75,6 @@ function kmeans(
     end
 end
 
-
-"""
-    kmeans(KMedoidsAlgorithm)
-
-    Entry point for K-Medoids clustering using a settings object instead.
-
-# Arguments
-- `KMedoidsAlgorithm`: Settings object. See object description for more information
-
-# Returns
-A `KMeansResult` containing the clustering results.
-
-# Example
-```julia
-settings = KMeansClustering.KMedoidsAlgorithm(
-    X,                  # Points, column-wise: rows are the features, cols are the points
-    cluster_count;
-    init_method=:random,
-    max_iter=50,
-)
-result = KMeansClustering.kmeans(settings)
-```
-
-See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)`](@ref)
-"""
-function kmeans(
-    settings::KMedoidsAlgorithm
-)
-    kmedoids_fit(settings)
-end
-
+export kmeans, KMeansResult, KMedoidsAlgorithm
 
 end # module
