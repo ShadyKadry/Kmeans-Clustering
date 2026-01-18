@@ -23,9 +23,6 @@ using .KMeans: SimpleKMeansAlgorithm, simplekmeans
 using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
 
-
-export kmeans, KMeansResult
-
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
 
@@ -67,10 +64,12 @@ function kmeans(
     elseif method == :kmeans
         if init == :random
             idx = randperm(rng, size(X, 2))[1:k]
-            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
+        elseif init == :kmeanspp
+            idx = kmeanspp_init(X, k, rng=rng)
         else
             error("initialization strategy '$init' is not implemented")
         end
+        return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
     elseif method == :bkmeans
         ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
