@@ -30,7 +30,7 @@ struct KMedoidsAlgorithm{T<:Function, R <: AbstractMatrix{<:Real}, K <: Abstract
         n_clusters::Integer;
         max_iter::Integer = 100,
         tol::Real = 10e-4,
-        rng::K = Random.GLOBAL_RNG,
+        rng::K = GLOBAL_RNG,
         distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
     ) where {T<:Function, R <: AbstractMatrix{<:Real}, K <: AbstractRNG}
         new{T, R, K}(data, UInt32(n_clusters), UInt32(max_iter), Float64(tol), rng, distance_fun)
@@ -170,7 +170,7 @@ function update_clusters(
     return clusters, oidx, self.max_iter != oidx, final_sum
 end
 
-#     kmedoids_fit(data, n_clusters; max_iter=100, tol=1e-4, rng=Random.GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
+#     kmedoids_fit(data, n_clusters; max_iter=100, tol=1e-4, rng=GLOBAL_RNG, distance_fun=(a,b)->sum((a .- b).^2))
 #
 # Perform K-Medoids clustering on a dataset.
 #
@@ -208,7 +208,7 @@ function kmedoids_fit(
     n_clusters::Integer;
     max_iter::Integer=100,
     tol::Real=1e-4,
-    rng::AbstractRNG=Random.GLOBAL_RNG,
+    rng::AbstractRNG=GLOBAL_RNG,
     distance_fun::T=(a::AbstractVector, b::AbstractVector) -> sum((a .- b) .^ 2)
 ) where {T<:Function}
     return kmeans(
@@ -245,7 +245,7 @@ settings = KMeansClustering.KMedoidsAlgorithm(
 result = KMeansClustering.kmeans(settings)
 ```
 
-See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)`](@ref)
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=GLOBAL_RNG)`](@ref)
 """
 function kmeans(
     self::KMedoidsAlgorithm
