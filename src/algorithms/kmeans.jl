@@ -2,19 +2,44 @@ module KMeans
 
 using LinearAlgebra: norm
 using Statistics: mean
+using Random
 
-using ..KMeansClustering: KMeansResult
+using ..KMeansClustering: KMeansResult, KMeansAlgorithm
+
+struct SimpleKMeansAlgorithm <: KMeansAlgorithm
+    data::AbstractMatrix
+    n_clusters::Integer
+    init_method::Symbol
+    max_iter::Integer
+    tol::Real
+    rng::AbstractRNG
+
+    function SimpleKMeansAlgorithm(
+        data::AbstractMatrix,
+        n_clusters::Integer;
+        init_method::Symbol=:random,
+        max_iter::Integer=100,
+        tol::Real=10e-4,
+        rng::AbstractRNG=Random.GLOBAL_RNG
+    )
+        new(data, n_clusters, init_method, max_iter, tol, rng)
+    end
+end
 
 """
-    simplekmeans(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}; init_method::Symbol, maxiter::Int, tol::Real)
+    simplekmeans(dataset::AbstractMatrix{<:Real}, 
+                 initialcentroids::AbstractMatrix{<:Real}; 
+                 init_method::Symbol=:random,
+                 maxiter::Int=100,
+                 tol::Real=10e-4)
 
 Perform k-means clustering on a dataset following Lloyd's algorithm.
 In each iteration step, the mean of each cluster becomes the new centroid.
 
 # Arguments
-- `dataset::Matrix{Float64}`  
+- `dataset::AbstractMatrix{<:Real}`  
     A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::Matrix{Float64}`  
+- `initialcentroids::AbstractMatrix{<:Real}`  
     A `dxk` matrix containing the starting `k` centroids.
 
 # Keyword Arguments
@@ -27,12 +52,11 @@ In each iteration step, the mean of each cluster becomes the new centroid.
 
 Returns a `KMeansResult`
 """
-
-function simplekmeans(dataset::Matrix{Float64},
-    initialcentroids::Matrix{Float64};
-    init_method::Symbol,
-    maxiter::Int,
-    tol::Real)
+function simplekmeans(dataset::AbstractMatrix{<:Real},
+    initialcentroids::AbstractMatrix{<:Real};
+    init_method::Symbol=:random,
+    maxiter::Int=100,
+    tol::Real=10e-4)
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
@@ -75,13 +99,13 @@ function simplekmeans(dataset::Matrix{Float64},
             if isempty(indices)
                 newcentroids[:, i] = centroids[:, i]
             else
-                newcentroids[:, i] = mean(dataset[:, indices], dims=2)
+                newcentroids[:, i] = vec(mean(dataset[:, indices], dims=2))
             end
         end
 
         # check for convergence
 
-        if norm(newcentroids - centroids) < tol
+        if norm(newcentroids - centroids) < tol * sqrt(k * d)
             converged = true
             lastiter = iter
             break
@@ -106,6 +130,19 @@ function simplekmeans(dataset::Matrix{Float64},
         converged ? lastiter : maxiter,
         converged,
         init_method)
+end
+
+# Single struct overload
+function simplekmeans(
+    settings::SimpleKMeansAlgorithm,
+    initialcentroids::AbstractMatrix
+)
+    simplekmeans(
+        settings.data,
+        initialcentroids;
+        init_method=settings.init_method,
+        maxiter=settings.max_iter,
+        tol=settings.tol)
 end
 
 end
