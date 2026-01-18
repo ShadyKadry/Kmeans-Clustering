@@ -20,6 +20,8 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
         tol::Real=10e-4,
         rng::AbstractRNG=Random.GLOBAL_RNG
     )
+        n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
+        n_clusters < size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
         new(data, n_clusters, init_method, max_iter, tol, rng)
     end
 end
@@ -60,7 +62,7 @@ function simplekmeans(dataset::AbstractMatrix{<:Real},
     k = size(initialcentroids, 2)
 
     if d != size(initialcentroids, 1)
-        error("dimensions of data and centroids do not match")
+        throw(DimensionMismatch("dimensions of data and centroids do not match"))
     end
 
     assignedto = Vector{Int}(undef, N)
