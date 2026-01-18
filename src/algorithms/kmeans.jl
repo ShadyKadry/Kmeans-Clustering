@@ -9,7 +9,7 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     n_clusters::Integer
     init_method::Symbol
     max_iter::Integer
-    tol::Real
+    tol::Float64
     rng::AbstractRNG
 
     function SimpleKMeansAlgorithm(
@@ -22,13 +22,14 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     )
         n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
         n_clusters < size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
+        init_method in (:random, :kmeanspp) || throw(ArgumentError("unknown init_method"))
         new(data, n_clusters, init_method, max_iter, tol, rng)
     end
 end
 
 """
-    simplekmeans(dataset::AbstractMatrix{<:Real}, 
-                 initialcentroids::AbstractMatrix{<:Real}; 
+    simplekmeans(dataset::AbstractMatrix, 
+                 initialcentroids::AbstractMatrix; 
                  init_method::Symbol=:random,
                  maxiter::Int=100,
                  tol::Real=10e-4)
@@ -37,9 +38,9 @@ Perform k-means clustering on a dataset following Lloyd's algorithm.
 In each iteration step, the mean of each cluster becomes the new centroid.
 
 # Arguments
-- `dataset::AbstractMatrix{<:Real}`  
+- `dataset::AbstractMatrix`  
     A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::AbstractMatrix{<:Real}`  
+- `initialcentroids::AbstractMatrix`  
     A `dxk` matrix containing the starting `k` centroids.
 
 # Keyword Arguments
@@ -52,11 +53,11 @@ In each iteration step, the mean of each cluster becomes the new centroid.
 
 Returns a `KMeansResult`
 """
-function simplekmeans(dataset::AbstractMatrix{<:Real},
-    initialcentroids::AbstractMatrix{<:Real};
+function simplekmeans(dataset::AbstractMatrix,
+    initialcentroids::AbstractMatrix;
     init_method::Symbol=:random,
     maxiter::Int=100,
-    tol::Real=10e-4)
+    tol::Float64=10e-4)
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
