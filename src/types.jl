@@ -1,3 +1,6 @@
+
+abstract type KMeansAlgorithm end
+
 """
 KMeansResult
 
