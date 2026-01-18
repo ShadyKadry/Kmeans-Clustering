@@ -1,8 +1,6 @@
 using KMeansClustering
 using Test
 
-SKM = KMeansClustering.KMeans
-
 @testset "simplekmeans" begin
 
     data = [1.0 1.5 1.5 6.5 5.0 2.0 6.0 2.5 5.0 5.5;
@@ -12,17 +10,25 @@ SKM = KMeansClustering.KMeans
     k = 3
     expected_assign = [1, 2, 1, 3, 3, 2, 3, 2, 3, 3]
 
-    settings = KMeansClustering.SimpleKMeansAlgorithm(data, k)
+    settings = SimpleKMeansAlgorithm(data, k)
 
-    @testset "simple_fun" begin
-        result = SKM.simplekmeans(data, centroids)
+    @testset "SimpleKMeansAlgorithm construction" begin
+        @test settings.data == data
+        @test settings.n_clusters == k
+        @test_throws ArgumentError SimpleKMeansAlgorithm(data, 0)
+        @test_throws ArgumentError SimpleKMeansAlgorithm(data, size(data, 2) + 1)
+        @test_throws ArgumentError SimpleKMeansAlgorithm(data, k, init_method=:km)
+    end
+
+    @testset "simplekmeans" begin
+        result = simplekmeans(data, centroids)
         @test result.assignments == expected_assign
         @test size(result.centers, 2) == k
         @test result.init_method == :random
     end
 
-    @testset "simple_settings_fun" begin
-        result = SKM.simplekmeans(settings, centroids)
+    @testset "kmeans" begin
+        result = kmeans(settings)
         @test result.assignments == expected_assign
         @test size(result.centers, 2) == k
         @test result.init_method == :random
