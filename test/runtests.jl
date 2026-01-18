@@ -6,4 +6,5 @@ using Test
     # Write your tests here.
     include("test_kmeanspp.jl")
     include("test_simplekmeans.jl")
+    include("test_kmedoids.jl")
 end

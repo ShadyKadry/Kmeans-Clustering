@@ -1,17 +1,28 @@
-module KMeans
-
 using LinearAlgebra: norm
 using Statistics: mean
 using Random
 
 using ..KMeansClustering: KMeansResult, KMeansAlgorithm
 
+"""
+    SimpleKMeansAlgorithm
+
+    Settings specific to the simple kmeans algorithm
+
+    Fields:
+    - `data`: Data matrix with features in rows and observations in columns
+    - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `init_method`: Method to initialize the starting centroids
+    - `max_iter`: Maximum number of iterations 
+    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+    - `rng`: Random Number Generator for the initial centroids
+"""
 struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     data::AbstractMatrix
     n_clusters::Integer
     init_method::Symbol
     max_iter::Integer
-    tol::Real
+    tol::Float64
     rng::AbstractRNG
 
     function SimpleKMeansAlgorithm(
@@ -22,13 +33,16 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
         tol::Real=10e-4,
         rng::AbstractRNG=Random.GLOBAL_RNG
     )
+        n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
+        n_clusters < size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
+        init_method in (:random, :kmeanspp) || throw(ArgumentError("unknown init_method"))
         new(data, n_clusters, init_method, max_iter, tol, rng)
     end
 end
 
 """
-    simplekmeans(dataset::AbstractMatrix{<:Real}, 
-                 initialcentroids::AbstractMatrix{<:Real}; 
+    simplekmeans(dataset::AbstractMatrix, 
+                 initialcentroids::AbstractMatrix; 
                  init_method::Symbol=:random,
                  maxiter::Int=100,
                  tol::Real=10e-4)
@@ -37,9 +51,9 @@ Perform k-means clustering on a dataset following Lloyd's algorithm.
 In each iteration step, the mean of each cluster becomes the new centroid.
 
 # Arguments
-- `dataset::AbstractMatrix{<:Real}`  
+- `dataset::AbstractMatrix`  
     A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::AbstractMatrix{<:Real}`  
+- `initialcentroids::AbstractMatrix`  
     A `dxk` matrix containing the starting `k` centroids.
 
 # Keyword Arguments
@@ -52,17 +66,17 @@ In each iteration step, the mean of each cluster becomes the new centroid.
 
 Returns a `KMeansResult`
 """
-function simplekmeans(dataset::AbstractMatrix{<:Real},
-    initialcentroids::AbstractMatrix{<:Real};
+function simplekmeans(dataset::AbstractMatrix,
+    initialcentroids::AbstractMatrix;
     init_method::Symbol=:random,
     maxiter::Int=100,
-    tol::Real=10e-4)
+    tol::Float64=10e-4)
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
 
     if d != size(initialcentroids, 1)
-        error("dimensions of data and centroids do not match")
+        throw(DimensionMismatch("dimensions of data and centroids do not match"))
     end
 
     assignedto = Vector{Int}(undef, N)
@@ -132,17 +146,42 @@ function simplekmeans(dataset::AbstractMatrix{<:Real},
         init_method)
 end
 
-# Single struct overload
-function simplekmeans(
-    settings::SimpleKMeansAlgorithm,
-    initialcentroids::AbstractMatrix
+"""
+    kmeans(settings::SimpleKMeansAlgorithm)
+
+    Entry point for simple kmeans clustering using a settings object instead.
+
+# Arguments
+- `settings::SimpleKMeansAlgorithm`: Settings object. See object description for more information
+
+# Returns
+A `KMeansResult`.
+
+# Example
+```julia
+settings = KMeansClustering.SimpleKMeansAlgorithm(X, cluster_count)
+result = kmeans(settings)
+```
+
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=GLOBAL_RNG)`](@ref)
+"""
+function kmeans(
+    settings::SimpleKMeansAlgorithm
 )
-    simplekmeans(
-        settings.data,
-        initialcentroids;
+    X = settings.data
+    k = settings.n_clusters
+    if settings.init_method == :random
+        idx = randperm(settings.rng, size(X, 2))[1:k]
+    elseif settings.init_method == :kmeanspp
+        idx = kmeanspp_init(X, k; rng=settings.rng)
+    else
+        error("initialization strategy '$settings.init_method' is not implemented")
+    end
+
+    simplekmeans(settings.data,
+        X[:, idx];
         init_method=settings.init_method,
         maxiter=settings.max_iter,
         tol=settings.tol)
-end
 
 end
