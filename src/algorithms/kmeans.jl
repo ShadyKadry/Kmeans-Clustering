@@ -1,5 +1,3 @@
-module KMeans
-
 using LinearAlgebra: norm
 using Statistics: mean
 using Random
@@ -132,18 +130,6 @@ function simplekmeans(dataset::AbstractMatrix{<:Real},
         init_method)
 end
 
-# Single struct overload
-function simplekmeans(
-    settings::SimpleKMeansAlgorithm,
-    initialcentroids::AbstractMatrix
-)
-    simplekmeans(
-        settings.data,
-        initialcentroids;
-        init_method=settings.init_method,
-        maxiter=settings.max_iter,
-        tol=settings.tol)
-end
 
 function kmeans(
     settings::SimpleKMeansAlgorithm
@@ -158,8 +144,10 @@ function kmeans(
         error("initialization strategy '$settings.init_method' is not implemented")
     end
 
-    simplekmeans(settings, X[:, idx])
-
-end
+    simplekmeans(settings.data,
+        X[:, idx];
+        init_method=settings.init_method,
+        maxiter=settings.max_iter,
+        tol=settings.tol)
 
 end

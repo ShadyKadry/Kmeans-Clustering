@@ -19,7 +19,6 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/ckmeans.jl")
 
-using .KMeans: SimpleKMeansAlgorithm, simplekmeans
 using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
 
@@ -78,6 +77,6 @@ function kmeans(
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm
 
 end # module
