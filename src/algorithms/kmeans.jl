@@ -4,6 +4,19 @@ using Random
 
 using ..KMeansClustering: KMeansResult, KMeansAlgorithm
 
+"""
+    SimpleKMeansAlgorithm
+
+    Settings specific to the simple kmeans algorithm
+
+    Fields:
+    - `data`: Data matrix with features in rows and observations in columns
+    - `n_clusters`: Number of clusters that the dataset should be split up into
+    - `init_method`: Method to initialize the starting centroids
+    - `max_iter`: Maximum number of iterations 
+    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+    - `rng`: Random Number Generator for the initial centroids
+"""
 struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     data::AbstractMatrix
     n_clusters::Integer
@@ -133,7 +146,25 @@ function simplekmeans(dataset::AbstractMatrix,
         init_method)
 end
 
+"""
+    kmeans(settings::SimpleKMeansAlgorithm)
 
+    Entry point for simple kmeans clustering using a settings object instead.
+
+# Arguments
+- `settings::SimpleKMeansAlgorithm`: Settings object. See object description for more information
+
+# Returns
+A `KMeansResult`.
+
+# Example
+```julia
+settings = KMeansClustering.SimpleKMeansAlgorithm(X, cluster_count)
+result = kmeans(settings)
+```
+
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=GLOBAL_RNG)`](@ref)
+"""
 function kmeans(
     settings::SimpleKMeansAlgorithm
 )
