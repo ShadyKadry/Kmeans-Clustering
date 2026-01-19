@@ -40,32 +40,30 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     end
 end
 
-"""
-    simplekmeans(dataset::AbstractMatrix, 
-                 initialcentroids::AbstractMatrix; 
-                 init_method::Symbol=:random,
-                 maxiter::Int=100,
-                 tol::Real=10e-4)
+#     simplekmeans(dataset::AbstractMatrix, 
+#                  initialcentroids::AbstractMatrix; 
+#                  init_method::Symbol=:random,
+#                  maxiter::Int=100,
+#                  tol::Real=10e-4)
 
-Perform k-means clustering on a dataset following Lloyd's algorithm.
-In each iteration step, the mean of each cluster becomes the new centroid.
+# Perform k-means clustering on a dataset following Lloyd's algorithm.
+# In each iteration step, the mean of each cluster becomes the new centroid.
 
-# Arguments
-- `dataset::AbstractMatrix`  
-    A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::AbstractMatrix`  
-    A `dxk` matrix containing the starting `k` centroids.
+# # Arguments
+# - `dataset::AbstractMatrix`  
+#     A `dxn` matrix where each column is a point and each row is a feature.
+# - `initialcentroids::AbstractMatrix`  
+#     A `dxk` matrix containing the starting `k` centroids.
 
-# Keyword Arguments
-- `init_method::Symbol`  
-    Method for choosing initial medoids, e.g. :random, :kmeans++
-- `maxiter::Int`  
-    Maximum number of iterations.
-- `tol::Float64`  
-    tolerance threshold to determine convergence.
+# # Keyword Arguments
+# - `init_method::Symbol`  
+#     Method for choosing initial medoids, e.g. :random, :kmeans++
+# - `maxiter::Int`  
+#     Maximum number of iterations.
+# - `tol::Float64`  
+#     tolerance threshold to determine convergence.
 
-Returns a `KMeansResult`
-"""
+# Returns a `KMeansResult`
 function simplekmeans(dataset::AbstractMatrix,
     initialcentroids::AbstractMatrix;
     init_method::Symbol=:random,
