@@ -37,7 +37,7 @@ X = rand(2, 100)  # 2 features, 100 observations
 result = kmeans(X, 3)
 
 println("Cluster assignments: ", result.assignments)
-println("Medoids: ", result.centers)
+println("Final centroids: ", result.centers)
 println("Total inertia: ", result.inertia)
 println("Converged: ", result.converged)
 ```
