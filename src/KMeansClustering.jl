@@ -77,6 +77,6 @@ function kmeans(
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, simplekmeans
 
 end # module
