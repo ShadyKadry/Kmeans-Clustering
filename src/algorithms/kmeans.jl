@@ -61,7 +61,7 @@ In each iteration step, the mean of each cluster becomes the new centroid.
     Method for choosing initial medoids, e.g. :random, :kmeans++
 - `maxiter::Int`  
     Maximum number of iterations.
-- `tol::Real`  
+- `tol::Float64`  
     tolerance threshold to determine convergence.
 
 Returns a `KMeansResult`
