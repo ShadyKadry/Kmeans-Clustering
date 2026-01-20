@@ -1,3 +1,12 @@
+<!-- 
+Copyright 2026
+AI Note:
+Parts of the text were compiled using generative AI, notably:
+- A base text was produced for the Overview and then modified
+
+
+-->
+
 ```@meta
 CurrentModule = KMeansClustering
 ```
@@ -7,6 +16,7 @@ CurrentModule = KMeansClustering
 ## Overview
 
 The K-Medoids algorithm is a robust variant of the K-Means algorithm, that, instead of creating artificial cluster centers, uses actual data points as centers. Just as calculating the median is more robust to outliers as the average is, the K-Medoids algorithm is more resistant to noise and outliers than K-Means.
+This implementation uses the Partitioning Around Medoids (PAM) approach. See the references below for an explanation.
 
 Comparison to K-Means:
 
@@ -16,11 +26,16 @@ Comparison to K-Means:
   - Works with any distance metric (not limited to Euclidean distance)
 
 - **Disadvantages:**
-  - Computationally more expensive than K-Means ($O(k(n-k)^2)$) per iteration)
+  - Computationally more expensive than K-Means ($O(k(n-k)^2)$ > $O(n \cdot k \cdot d \cdot i)$) per iteration)
+    - where:
+      - $n$: number of data points
+      - $k$: number of clusters
+      - $d$: dimensionality
+      - $i$: number of iterations until convergence
 
 ## Implementation Details
 
-This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [E.M. Mirkes, University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html).
+This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/).
 
 ### Data Format
 
@@ -72,6 +87,11 @@ settings = KMeansClustering.KMedoidsAlgorithm(
 
 # Run clustering using multiple dispatch
 result = kmeans(settings)
+
+println("Cluster assignments: ", result.assignments)
+println("Medoids: ", result.centers)
+println("Total inertia: ", result.inertia)
+println("Converged: ", result.converged)
 ```
 
 ## Parameters
@@ -87,7 +107,7 @@ KMeansClustering.KMedoidsAlgorithm
 
 ### Example 1: Basic Clustering
 
-```julia
+```@example kmedoids_3
 using KMeansClustering
 
 # Create sample data: 3 Gaussian clusters
@@ -107,11 +127,10 @@ println("Inertia: ", result.inertia)
 
 ### Example 3: Custom Distance Metric
 
-```julia
+```@example kmedoids_4
 using KMeansClustering
 using LinearAlgebra
 
-# Data with angular relationships
 X = rand(3, 100)
 
 # Use cosine distance
@@ -129,8 +148,13 @@ settings = KMedoidsAlgorithm(
 )
 
 result = kmeans(settings)
+
+println("Number of iterations: ", result.iterations)
+println("Converged: ", result.converged)
+println("Inertia: ", result.inertia)
 ```
 
 ## References
 
-- E.M. Mirkes, "K-means and K-medoids applet", University of Leicester, 2011. [http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
+- [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
+- [TU Dortmund: k-means Clustering](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmeans-intro/)

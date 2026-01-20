@@ -1,3 +1,7 @@
+# Copyright 2026
+# This code was not generated using AI
+
+
 using KMeansClustering
 using Random
 using Plots

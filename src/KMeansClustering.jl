@@ -44,7 +44,7 @@ Returns a `KMeansResult`.
 Available algorithms:
 
 - K-Medoids (method=:kmedoids):
-    As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
+    As described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
     Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
     artificial ones.
 

@@ -56,7 +56,7 @@ The standard k-means algorithm using Lloyd's algorithm. Iteratively assigns poin
 
 ### K-Medoids
 
-Based on [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html). Unlike typical k-means, k-medoids chooses cluster centers from the actual data points instead of calculating artificial centroids. This makes it more interpretable and robust to outliers.
+Based on [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/). Unlike typical k-means, k-medoids chooses cluster centers from the actual data points instead of calculating artificial centroids. This makes it more interpretable and robust to outliers.
 
 **Method**: `:kmedoids`
 
