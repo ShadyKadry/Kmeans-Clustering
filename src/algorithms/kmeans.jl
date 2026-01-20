@@ -7,15 +7,15 @@ using ..KMeansClustering: KMeansResult, KMeansAlgorithm
 """
     SimpleKMeansAlgorithm
 
-    Settings specific to the simple kmeans algorithm
+Settings specific to the simple kmeans algorithm
 
-    Fields:
-    - `data`: Data matrix with features in rows and observations in columns
-    - `n_clusters`: Number of clusters that the dataset should be split up into
-    - `init_method`: Method to initialize the starting centroids
-    - `max_iter`: Maximum number of iterations 
-    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
-    - `rng`: Random Number Generator for the initial centroids
+Fields:
+- `data`: Data matrix with features in rows and observations in columns
+- `n_clusters`: Number of clusters that the dataset should be split up into
+- `init_method`: Method to initialize the starting centroids
+- `max_iter`: Maximum number of iterations
+- `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+- `rng`: Random Number Generator for the initial centroids
 """
 struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     data::AbstractMatrix
@@ -40,8 +40,8 @@ struct SimpleKMeansAlgorithm <: KMeansAlgorithm
     end
 end
 
-#     simplekmeans(dataset::AbstractMatrix, 
-#                  initialcentroids::AbstractMatrix; 
+#     simplekmeans(dataset::AbstractMatrix,
+#                  initialcentroids::AbstractMatrix;
 #                  init_method::Symbol=:random,
 #                  maxiter::Int=100,
 #                  tol::Real=10e-4)
@@ -50,17 +50,17 @@ end
 # In each iteration step, the mean of each cluster becomes the new centroid.
 
 # # Arguments
-# - `dataset::AbstractMatrix`  
+# - `dataset::AbstractMatrix`
 #     A `dxn` matrix where each column is a point and each row is a feature.
-# - `initialcentroids::AbstractMatrix`  
+# - `initialcentroids::AbstractMatrix`
 #     A `dxk` matrix containing the starting `k` centroids.
 
 # # Keyword Arguments
-# - `init_method::Symbol`  
+# - `init_method::Symbol`
 #     Method for choosing initial medoids, e.g. :random, :kmeans++
-# - `maxiter::Int`  
+# - `maxiter::Int`
 #     Maximum number of iterations.
-# - `tol::Float64`  
+# - `tol::Float64`
 #     tolerance threshold to determine convergence.
 
 # Returns a `KMeansResult`
@@ -147,7 +147,7 @@ end
 """
     kmeans(settings::SimpleKMeansAlgorithm)
 
-    Entry point for simple kmeans clustering using a settings object instead.
+Entry point for simple kmeans clustering using a settings object.
 
 # Arguments
 - `settings::SimpleKMeansAlgorithm`: Settings object. See object description for more information
