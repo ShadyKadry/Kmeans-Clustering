@@ -17,6 +17,7 @@ makedocs(;
         "Getting Started" => "getting_started.md",
         "Algorithms" => [
             "KMedoids" => "algorithms/kmedoids.md",
+            "Simple KMeans" => "algorithms/simplekmeans.md"
         ]
     ],
 )
