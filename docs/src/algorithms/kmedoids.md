@@ -1,3 +1,12 @@
+<!-- 
+Copyright 2026
+AI Note:
+Parts of the text were compiled using generative AI, notably:
+- A base text was produced for the Overview and then modified
+
+
+-->
+
 ```@meta
 CurrentModule = KMeansClustering
 ```
@@ -7,6 +16,7 @@ CurrentModule = KMeansClustering
 ## Overview
 
 The K-Medoids algorithm is a robust variant of the K-Means algorithm, that, instead of creating artificial cluster centers, uses actual data points as centers. Just as calculating the median is more robust to outliers as the average is, the K-Medoids algorithm is more resistant to noise and outliers than K-Means.
+This implementation uses the Partitioning Around Medoids (PAM) approach. See the references below for an explanation.
 
 Comparison to K-Means:
 
@@ -16,11 +26,16 @@ Comparison to K-Means:
   - Works with any distance metric (not limited to Euclidean distance)
 
 - **Disadvantages:**
-  - Computationally more expensive than K-Means ($O(k(n-k)^2)$) per iteration)
+  - Computationally more expensive than K-Means ($O(k(n-k)^2)$ > $O(n \cdot k \cdot d \cdot i)$) per iteration)
+    - where:
+      - $n$: number of data points
+      - $k$: number of clusters
+      - $d$: dimensionality
+      - $i$: number of iterations until convergence
 
 ## Implementation Details
 
-This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [E.M. Mirkes, University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html).
+This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/).
 
 ### Data Format
 
@@ -133,4 +148,5 @@ result = kmeans(settings)
 
 ## References
 
-- E.M. Mirkes, "K-means and K-medoids applet", University of Leicester, 2011. [http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
+- [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
+- [TU Dortmund: k-means Clustering](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmeans-intro/)

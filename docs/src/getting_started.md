@@ -1,3 +1,8 @@
+<!-- 
+Copyright 2026
+This file was not written using AI
+-->
+
 # Geting Started with KMeansClustering.jl
 
 This is a short tutorial on how to use the KMeansClustering Library and visualize
