@@ -87,6 +87,11 @@ settings = KMeansClustering.KMedoidsAlgorithm(
 
 # Run clustering using multiple dispatch
 result = kmeans(settings)
+
+println("Cluster assignments: ", result.assignments)
+println("Medoids: ", result.centers)
+println("Total inertia: ", result.inertia)
+println("Converged: ", result.converged)
 ```
 
 ## Parameters
@@ -102,7 +107,7 @@ KMeansClustering.KMedoidsAlgorithm
 
 ### Example 1: Basic Clustering
 
-```julia
+```@example kmedoids_3
 using KMeansClustering
 
 # Create sample data: 3 Gaussian clusters
@@ -122,11 +127,10 @@ println("Inertia: ", result.inertia)
 
 ### Example 3: Custom Distance Metric
 
-```julia
+```@example kmedoids_4
 using KMeansClustering
 using LinearAlgebra
 
-# Data with angular relationships
 X = rand(3, 100)
 
 # Use cosine distance
@@ -144,6 +148,10 @@ settings = KMedoidsAlgorithm(
 )
 
 result = kmeans(settings)
+
+println("Number of iterations: ", result.iterations)
+println("Converged: ", result.converged)
+println("Inertia: ", result.inertia)
 ```
 
 ## References
