@@ -1,12 +1,3 @@
-<!-- 
-Copyright 2026
-AI Note:
-Parts of the text were compiled using generative AI, notably:
-- A base text was produced for the Overview and then modified
-
-
--->
-
 ```@meta
 CurrentModule = KMeansClustering
 ```
@@ -158,3 +149,8 @@ println("Inertia: ", result.inertia)
 
 - [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
 - [TU Dortmund: k-means Clustering](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmeans-intro/)
+
+
+### AI Note
+Parts of the text were compiled using generative AI, notably:
+- A base text was produced for the Overview and then modified
