@@ -5,10 +5,11 @@ using ..KMeansClustering: KMeansResult
 using LinearAlgebra: norm
 
 """
-  kmeanslog(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}, init_method::Symbol, maxiter::Int, maxinneriter::Int, tol::Real)
+kmeanslog(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}, init_method::Symbol, maxiter::Int, maxinneriter::Int, tol::Real)
 
 Find clusters that minimize the sum of the log of the Euclidean norm.
 """
+
 function kmeanslog(dataset::Matrix{Float64},
   initialcentroids::Matrix{Float64},
   init_method::Symbol,
