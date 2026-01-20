@@ -5,7 +5,7 @@
 -->
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://shadykadry.github.io/Kmeans-Clustering/dev/)
 [![Build Status](https://github.com/shadykadry/Kmeans-Clustering/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/shadykadry/Kmeans-Clustering/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/shadykadry/Kmeans-Clustering.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/shadykadry/Kmeans-Clustering)
+[![Coverage](https://codecov.io/gh/shadykadry/Kmeans-Clustering/branch/main/graph/badge.svg)](https://codecov.io/gh/shadykadry/Kmeans-Clustering)
 
 A Julia package for k-means clustering and related algorithms. This package provides implementations of several clustering algorithms including standard k-means, k-means++, k-medoids, bisecting k-means, and constrained k-means.
 
