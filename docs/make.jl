@@ -17,7 +17,8 @@ makedocs(;
         "Getting Started" => "getting_started.md",
         "Algorithms" => [
             "K-Medoids" => "algorithms/kmedoids.md",
-            "Simple KMeans" => "algorithms/simplekmeans.md"
+            "Simple KMeans" => "algorithms/simplekmeans.md",
+            "Bisecting K-Means" => "algorithms/bkmeans.md"
         ]
     ],
 )
