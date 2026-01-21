@@ -1,4 +1,3 @@
-
 """
     KMeansClustering
 
@@ -19,12 +18,11 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/kmeanslog.jl")
 
-using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
 using .KMeansLog: kmeanslog
 
 """
-    kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
+    kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, nstart=10, rng=Random.GLOBAL_RNG)
 
 High-level entry point for k-means clustering.
 
@@ -37,6 +35,7 @@ Keyword arguments
 - `init`: initialization strategy (:random, :kmeanspp).
 - `maxiter`: maximum number of Lloyd iterations.
 - `tol`: tolerance for convergence.
+- `nstart`: number of random restarts for Bisecting K-Means (only used when `method=:bkmeans`).
 - `rng`: random number generator.
 
 Returns a `KMeansResult`.
@@ -48,6 +47,12 @@ Available algorithms:
     Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
     artificial ones.
 
+- Bisecting K-Means (method=:bkmeans):
+    A hierarchical, divisive variant of K-Means.
+    The algorithm starts with a single cluster and repeatedly splits the cluster with the largest
+    within-cluster sum of squared errors (SSE) into two sub-clusters, until `k` clusters are reached.
+    Each split is performed by running a 2-means sub-problem (optionally with multiple restarts via `nstart`).
+
 """
 function kmeans(
     X::AbstractMatrix{<:Real},
@@ -56,6 +61,7 @@ function kmeans(
     init::Symbol=:random,
     maxiter::Int=100,
     tol::Real=1e-4,
+    nstart::Int=10,
     rng::AbstractRNG=GLOBAL_RNG
 )
 
@@ -71,8 +77,7 @@ function kmeans(
         end
         return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
     elseif method == :bkmeans
-        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
-        return KMeansResult(ce, as, to, co)
+        return bkmeans_fit(X, k; max_iter=maxiter, tol=tol, nstart=nstart, rng=rng)
     elseif method == :kmeanslog
         idx = randperm(rng, size(X, 2))[1:k]
         return kmeanslog(X, X[:, idx], init, maxiter, maxiter, tol)
@@ -81,6 +86,6 @@ function kmeans(
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, simplekmeans
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans
 
 end # module
