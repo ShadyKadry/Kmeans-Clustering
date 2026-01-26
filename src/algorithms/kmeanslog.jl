@@ -5,9 +5,25 @@ using ..KMeansClustering: KMeansResult
 using LinearAlgebra: norm
 
 """
-kmeanslog(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}, init_method::Symbol, maxiter::Int, maxinneriter::Int, tol::Real)
-
+  kmeanslog(dataset::Matrix{Float64}, initialcentroids::Matrix{Float64}, init_method::Symbol, maxiter::Int, maxinneriter::Int, tol::Real)
 Find clusters that minimize the sum of the log of the Euclidean norm.
+
+# Arguments
+- `dataset::Matrix{Float64}`  
+    A `dxn` matrix where each column is a point and each row is a feature.
+- `initialcentroids::Matrix{Float64}`  
+    A `dxk` matrix containing the starting `k` centroids.
+- `init_method::Symbol`  
+    Method for choosing initial medoids, e.g. :random, :kmeans++
+- `maxiter::Int`  
+    Maximum number of iterations.
+- `maxinneriter::Int`
+    Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
+- `tol::Real`  
+    tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
+
+Returns a `KMeansResult`
+
 """
 
 function kmeanslog(dataset::Matrix{Float64},
