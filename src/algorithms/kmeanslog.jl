@@ -14,13 +14,15 @@ Find clusters that minimize the sum of the log of the Euclidean norm.
     A `dxk` matrix containing the starting `k` centroids.
 - `init_method::Symbol`  
     Method for choosing initial medoids, e.g. :random, :kmeans++
+- `tol::Real`  
+    tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
+# Keyword Arguments
 - `maxiter::Int`  
     Maximum number of iterations.
 - `maxinneriter::Int`
     Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
-- `tol::Real`  
-    tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
-
+- `eps`
+    epsilon to avoid `log(0)`
 Returns a `KMeansResult`
 
 """
@@ -28,10 +30,10 @@ Returns a `KMeansResult`
 function kmeanslog(dataset::Matrix{Float64},
   initialcentroids::Matrix{Float64},
   init_method::Symbol,
-  maxiter::Int,
-  maxinneriter::Int,
-  tol::Real)
-  eps = 1e-12
+  tol::Real;
+  maxiter::Int=100,
+  maxinneriter::Int=100,
+  eps::Real=1e-12)
   N = size(dataset, 2)
   # a mapping from an index in the data set to an index in the clusters.
   cluster_map = Vector{Int}(undef, N)
@@ -105,7 +107,7 @@ function kmeanslog(dataset::Matrix{Float64},
   # calculate inertia
   dist::Real = 0
   for i in 1:size(initialcentroids, 2)
-    dist += sum(norm.(eachcol(dataset[:, cluster_map.==i] .- centroids[:, i])) .^ 2)
+    dist += sum((log ∘ norm).(eachcol(dataset[:, cluster_map.==i] .- centroids[:, i])) .^ 2)
   end
   return KMeansResult(
     centroids,
