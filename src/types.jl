@@ -23,8 +23,10 @@ Fields:
     in 1:k indicating the cluster index of point i.
 
 - inertia::T
-    The sum of squared distances of each point to its assigned center
+    The sum of the values of each k-means objective function. For all functions except for `kmeanslog`,
+    this is the sum of squared distances of each point to its assigned center
     (within-cluster sum of squares), used as a measure of cluster quality.
+    For `kmeanslog`, this is the sum of the log of all distances from the cluster center.
 
 - iterations::Int
     The number of iterations of the k-means update loop that were performed.
