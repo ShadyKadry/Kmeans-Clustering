@@ -7,4 +7,5 @@ using Test
     include("test_kmeanspp.jl")
     include("test_simplekmeans.jl")
     include("test_kmedoids.jl")
+    include("test_kmeanslog.jl")
 end
