@@ -19,8 +19,9 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/kmeanslog.jl")
 
-using .KMeans: simplekmeans
 using .BKMeans: bkmeans
+using .AlgorithmsKMeansPP: kmeanspp_init
+using .KMeansLog: kmeanslog
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -43,7 +44,7 @@ Returns a `KMeansResult`.
 Available algorithms:
 
 - K-Medoids (method=:kmedoids):
-    As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
+    As described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
     Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
     artificial ones.
 
@@ -63,10 +64,12 @@ function kmeans(
     elseif method == :kmeans
         if init == :random
             idx = randperm(rng, size(X, 2))[1:k]
-            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
+        elseif init == :kmeanspp
+            idx = kmeanspp_init(X, k, rng=rng)
         else
             error("initialization strategy '$init' is not implemented")
         end
+        return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
     elseif method == :bkmeans
         ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
@@ -75,6 +78,6 @@ function kmeans(
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, simplekmeans
 
 end # module

@@ -3,19 +3,37 @@ using DataStructures: DefaultDict
 
 using ..KMeansClustering: KMeansResult, KMeansAlgorithm
 
+# Implementation for the K-Medoids algorithm as described in:
+# <https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/>
+#
+# Copyright 2026, Mark-André Schadow
+#
+# AI Note:
+#
+# Parts of this files were composed using generative AI Tools, notably:
+# - Parts of the documentation and comments in the code
+# - AI was used to validate parts of the code
+# The code itself was not written by any form of AI
 
 """
-    KMedoidsAlgorithm
+    KMedoidsAlgorithm(
+        data::AbstractMatrix{<:Real},
+        n_clusters::Integer;
+        max_iter::Integer = 100,
+        tol::Real = 10e-4,
+        rng::AbstractRNG = GLOBAL_RNG,
+        distance_fun::Function = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
+    )
 
-    Settings specific to the KMedoids algorithm
+Settings specific to the KMedoids algorithm. Use this in conjunction with [kmeans(KMedoidsAlgorithm)](@ref) to perform K-Medoids clustering.
 
-    Fields:
-    - `data`: Data matrix with features in rows and observations in columns
-    - `n_clusters`: Number of clusters that the dataset should be split up into
-    - `max_iter`: Maximum number of iterations to run before aborting
-    - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
-    - `rng`: Random Number Generator to use for generating the initial medoid centers
-    - `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
+Fields:
+- `data`: Data matrix with features in rows and observations in columns
+- `n_clusters`: Number of clusters that the dataset should be split up into
+- `max_iter`: Maximum number of iterations to run before aborting
+- `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
+- `rng`: Random Number Generator to use for generating the initial medoid centers
+- `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
 """
 struct KMedoidsAlgorithm{T<:Function, R <: AbstractMatrix{<:Real}, K <: AbstractRNG} <: KMeansAlgorithm
     data::R
@@ -33,6 +51,8 @@ struct KMedoidsAlgorithm{T<:Function, R <: AbstractMatrix{<:Real}, K <: Abstract
         rng::K = GLOBAL_RNG,
         distance_fun::T = (a::AbstractVector, b::AbstractVector) -> sum((a .- b).^2)
     ) where {T<:Function, R <: AbstractMatrix{<:Real}, K <: AbstractRNG}
+        # The soundness of these settings is checked by the kmeans function to apply
+        # a single check to different methods of calling kmeans
         new{T, R, K}(data, UInt32(n_clusters), UInt32(max_iter), Float64(tol), rng, distance_fun)
     end
 end
@@ -70,7 +90,7 @@ function initialize_medoids(
     return t_Medoid_Idx.(randperm(self.rng, size(self.data, 2))[1:self.n_clusters])
 end
 
-# Assign all data points to their closest medoids and calculate the cluster internal distance for each
+# Assign all data points to their closest medoids and calculate the cluster-internal distance for each
 function calculate_clusters(
     self::KMedoidsAlgorithm,
     medoids::t_Medoid_Array
@@ -179,7 +199,7 @@ end
 # robust to noise and outliers.
 #
 # Implementation is based on the description from:
-# <http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html>
+# <https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/>
 #
 # This implementation chooses the initial medoids at random.
 #
@@ -202,7 +222,7 @@ end
 #     Default is squared Euclidean distance. Must return a single real number where
 #     greater values represent greater distnaces
 #
-# Returns a `KMeansResult`
+# Returns a [KMeansResult](@ref)
 function kmedoids_fit(
     data::AbstractMatrix{<:Real},
     n_clusters::Integer;
@@ -226,13 +246,13 @@ end
 """
     kmeans(KMedoidsAlgorithm)
 
-    Entry point for K-Medoids clustering using a settings object instead.
+Entry point for K-Medoids clustering using a settings object.
 
 # Arguments
-- `KMedoidsAlgorithm`: Settings object. See object description for more information
+- [KMedoidsAlgorithm](@ref): Settings object. See object description for more information
 
 # Returns
-A `KMeansResult` containing the clustering results.
+A [KMeansResult](@ref) containing the clustering results.
 
 # Example
 ```julia
