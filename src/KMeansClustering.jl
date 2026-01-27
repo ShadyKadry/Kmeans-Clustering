@@ -21,7 +21,6 @@ include("algorithms/kmeanslog.jl")
 
 using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
-using .KMeansLog: kmeanslog
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
