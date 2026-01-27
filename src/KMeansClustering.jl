@@ -72,8 +72,11 @@ function kmeans(
         ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
     elseif method == :kmeanslog
-        idx = randperm(rng, size(X, 2))[1:k]
-        return kmeanslog(X, X[:, idx], init, maxiter, maxiter, tol)
+        if init == :random
+            idx = randperm(rng, size(X, 2))[1:k]
+            return kmeanslog(X, X[:, idx], init, maxiter, maxiter, tol)
+        end
+        error("initialization strategy '$init' is not implemented")
     else
         error("method '$method' is not implemented.")
     end
