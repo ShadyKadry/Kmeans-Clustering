@@ -67,6 +67,7 @@ function kmeanslog(dataset::Matrix{Float64},
     # Step 3: update clusters
     for cluster_i in 1:size(centroids, 2)
       # minimize log 2-norm via iterative reweighted least squares (IRLS) for each cluster.
+      # an LLM was used to get the pseudocode for the IRLS algorithm. 
       inner_flag = true
       curr_iter = 1
       while inner_flag && curr_iter <= maxinneriter
