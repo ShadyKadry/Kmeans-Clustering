@@ -1,5 +1,3 @@
-# https://arxiv.org/abs/1911.05940
-
 using ..KMeansClustering: KMeansResult
 using LinearAlgebra: norm
 
