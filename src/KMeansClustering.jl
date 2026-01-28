@@ -21,7 +21,6 @@ include("algorithms/kmeanslog.jl")
 
 using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
-using .KMeansLog: kmeanslog
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
@@ -73,14 +72,11 @@ function kmeans(
     elseif method == :bkmeans
         ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
         return KMeansResult(ce, as, to, co)
-    elseif method == :kmeanslog
-        idx = randperm(rng, size(X, 2))[1:k]
-        return kmeanslog(X, X[:, idx], init, maxiter, maxiter, tol)
     else
         error("method '$method' is not implemented.")
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, simplekmeans
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, simplekmeans, KMeansLogAlgorithm
 
 end # module
