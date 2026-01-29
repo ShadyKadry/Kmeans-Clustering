@@ -17,26 +17,26 @@ Fields:
 - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
 - `rng`: Random Number Generator for the initial centroids
 """
-struct SimpleKMeansAlgorithm <: KMeansAlgorithm
-    data::AbstractMatrix
+struct SimpleKMeansAlgorithm{K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG} <: KMeansAlgorithm
+    data::T
     n_clusters::Integer
     init_method::Symbol
     max_iter::Integer
     tol::Float64
-    rng::AbstractRNG
+    rng::N
 
     function SimpleKMeansAlgorithm(
-        data::AbstractMatrix,
+        data::T,
         n_clusters::Integer;
         init_method::Symbol=:random,
         max_iter::Integer=100,
         tol::Real=10e-4,
-        rng::AbstractRNG=Random.GLOBAL_RNG
-    )
+        rng::N=Random.GLOBAL_RNG
+    ) where {K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG}
         n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
         n_clusters < size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
         init_method in (:random, :kmeanspp) || throw(ArgumentError("unknown init_method"))
-        new(data, n_clusters, init_method, max_iter, tol, rng)
+        new{K, T, N}(data, n_clusters, init_method, max_iter, tol, rng)
     end
 end
 
@@ -64,11 +64,11 @@ end
 #     tolerance threshold to determine convergence.
 
 # Returns a `KMeansResult`
-function simplekmeans(dataset::AbstractMatrix,
-    initialcentroids::AbstractMatrix;
+function simplekmeans(dataset::T,
+    initialcentroids::T;
     init_method::Symbol=:random,
     maxiter::Int=100,
-    tol::Float64=10e-4)
+    tol::Float64=10e-4) where {K <: Real, T <: AbstractMatrix{K}}
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
