@@ -61,7 +61,6 @@ using KMeansClustering
 
     # tol = 1e10
     unusable = KMeansClustering.kmeans(KMeansLogAlgorithm(X, k, 1e10))
-    print(unusable)
     # tol = 0
     notconverged = KMeansClustering.kmeans(KMeansLogAlgorithm(X, k, 0))
     @test unusable.converged

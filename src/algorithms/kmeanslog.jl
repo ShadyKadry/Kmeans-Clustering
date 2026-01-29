@@ -12,16 +12,16 @@ using LinearAlgebra: norm
 # Find clusters that minimize the sum of the log of the Euclidean norm.
 
 # # Arguments
-# - `dataset::Matrix{Float64}`  
+# - `dataset::Matrix{Float64}`
 #     A `dxn` matrix where each column is a point and each row is a feature.
-# - `initialcentroids::Matrix{Float64}`  
+# - `initialcentroids::Matrix{Float64}`
 #     A `dxk` matrix containing the starting `k` centroids.
-# - `init_method::Symbol`  
+# - `init_method::Symbol`
 #     Method for choosing initial medoids, e.g. :random, :kmeans++
-# - `tol::Real`  
+# - `tol::Real`
 #     tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
 # # Keyword Arguments
-# - `maxiter::Int`  
+# - `maxiter::Int`
 #     Maximum number of iterations.
 # - `maxinneriter::Int`
 #     Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
@@ -36,7 +36,7 @@ function kmeanslog(
   tol::Real;
   maxiter::Int=100,
   maxinneriter::Int=100,
-  eps::Real=1e-12) where {T<:AbstractMatrix{<:Real}}
+  eps::Real=1e-12) where {K <: Real, T<:AbstractMatrix{<:K}}
   N = size(dataset, 2)
   # a mapping from an index in the data set to an index in the clusters.
   cluster_map = Vector{Int}(undef, N)
@@ -70,7 +70,7 @@ function kmeanslog(
     # Step 3: update clusters
     for cluster_i in 1:size(centroids, 2)
       # minimize log 2-norm via iterative reweighted least squares (IRLS) for each cluster.
-      # an LLM was used to get the pseudocode for the IRLS algorithm. 
+      # an LLM was used to get the pseudocode for the IRLS algorithm.
       inner_flag = true
       curr_iter = 1
       while inner_flag && curr_iter <= maxinneriter
@@ -133,20 +133,20 @@ end
     ) where {T<:AbstractMatrix{<:Real}}
 
 Fields:
-- `dataset::Matrix{Float64}`  
+- `dataset::Matrix{Float64}`
     A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::Matrix{Float64}`  
+- `initialcentroids::Matrix{Float64}`
     A `dxk` matrix containing the starting `k` centroids.
-- `tol::Real`  
+- `tol::Real`
     tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
-- `maxiter::Int`  
+- `maxiter::Int`
     Maximum number of iterations.
 - `maxinneriter::Int`
     Maximum number of iterations for iterative reweighted least squares(IRLS), which is used to compute the new cluster point.
 - `eps`
     epsilon to avoid `log(0)`
 """
-struct KMeansLogAlgorithm{T<:AbstractMatrix{<:Real}} <: KMeansAlgorithm
+struct KMeansLogAlgorithm{K <: Real, T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
   dataset::T
   n_clusters::Int
   tol::Real
@@ -161,8 +161,8 @@ struct KMeansLogAlgorithm{T<:AbstractMatrix{<:Real}} <: KMeansAlgorithm
     maxiter::Int=100,
     maxinneriter::Int=100,
     eps::Real=1e-12
-  ) where {T<:AbstractMatrix{<:Real}}
-    new{T}(dataset, n_clusters, tol, maxiter, maxinneriter, eps)
+  ) where {K <: Real, T<:AbstractMatrix{<:K}}
+    new{K, T}(dataset, n_clusters, tol, maxiter, maxinneriter, eps)
   end
 end
 """
