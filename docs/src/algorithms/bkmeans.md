@@ -139,7 +139,7 @@ println("Inertia with nstart=20: ", res_high.inertia)
 ```
 
 ## References
-- [GeeksForGeeks]((https://www.geeksforgeeks.org/data-science/bisecting-k-means-algorithm-introduction/))
+- [GeeksForGeeks](https://www.geeksforgeeks.org/data-science/bisecting-k-means-algorithm-introduction/)
 
 ## AI Note
 - I took the structure from kmedoids.md 
