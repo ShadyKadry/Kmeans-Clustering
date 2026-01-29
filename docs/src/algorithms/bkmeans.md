@@ -89,7 +89,7 @@ data = hcat(
 )
 
 # Cluster the data
-result = kmeans(BKMeansAlgorithm(data, 3, maxiter=60, tol=1e-4, nstart=10, rng=rng))
+result = kmeans(BKMeansAlgorithm(data, 3, max_iter=60, tol=1e-4, nstart=10, rng=rng))
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
@@ -107,8 +107,8 @@ rng = MersenneTwister(99)
 # Slightly elongated cloud (2×200)
 X = vcat(randn(rng, 1, 200), randn(rng, 1, 200) .* 0.3)
 
-res_low  = kmeans(BKMeansAlgorithm(X, 4, maxiter=40, tol=1e-4, nstart=1,  rng=MersenneTwister(1)))
-res_high = kmeans(BKMeansAlgorithm(X, 4, maxiter=40, tol=1e-4, nstart=20, rng=MersenneTwister(1)))
+res_low  = kmeans(BKMeansAlgorithm(X, 4, max_iter=40, tol=1e-4, nstart=1,  rng=MersenneTwister(1)))
+res_high = kmeans(BKMeansAlgorithm(X, 4, max_iter=40, tol=1e-4, nstart=20, rng=MersenneTwister(1)))
 
 println("Inertia with nstart=1:  ", res_low.inertia)
 println("Inertia with nstart=20: ", res_high.inertia)
