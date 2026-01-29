@@ -89,7 +89,7 @@ data = hcat(
 )
 
 # Cluster the data
-result = kmeans(KMedoidsAlgorithm(data, 3, method=:kmedoids, maxiter=100, tol=1e-4))
+result = kmeans(KMedoidsAlgorithm(data, 3, max_iter=100, tol=1e-4))
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
