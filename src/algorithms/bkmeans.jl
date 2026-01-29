@@ -68,32 +68,30 @@ struct BKMeansAlgorithm{R<:AbstractMatrix{<:Real}, K<:AbstractRNG} <: KMeansAlgo
     end
 end
 
-"""Squared Euclidean distance between two vectors."""
-@inline function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
+# Squared Euclidean distance between two vectors.
+function _sqdist(x::AbstractVector{<:Real}, y::AbstractVector{<:Real})::Float64
     s = 0.0
-    @inbounds for i in eachindex(x, y)
+    for i in eachindex(x, y)
         d = x[i] - y[i]
         s += d * d
     end
     return s
 end
 
-"""SSE (sum of squared errors) of a cluster given its member indices and centroid."""
+# SSE (sum of squared errors) of a cluster given its member indices and centroid.
 function _cluster_sse(dataset::AbstractMatrix{<:Real}, idxs::Vector{Int}, centroid::AbstractVector{<:Real})::Float64
     s = 0.0
-    @inbounds for id in idxs
+    for id in idxs
         s += _sqdist(view(dataset, :, id), centroid)
     end
     return s
 end
 
-"""
-Initialize 2 centroids for a 2-means split of the `subset`.
+# Initialize 2 centroids for a 2-means split of the `subset`.
 
-Strategy:
-1) pick one random point as the first centroid
-2) pick the point farthest away from it as the second centroid
-"""
+# Strategy:
+# 1) pick one random point as the first centroid
+# 2) pick the point farthest away from it as the second centroid
 function _init_two_centroids(self::BKMeansAlgorithm, subset::AbstractMatrix{<:Real})::Matrix{Float64}
     d, n = size(subset)
     n >= 2 || error("Can't initialize 2 centroids from a cluster with fewer than 2 points")
@@ -118,14 +116,12 @@ function _init_two_centroids(self::BKMeansAlgorithm, subset::AbstractMatrix{<:Re
     return init
 end
 
-"""
-Internal 2-means (Lloyd) used for bisection.
+# Internal 2-means (Lloyd) used for bisection.
 
-Conventions:
-- dataset is `d×N` and centroids are `d×k` (points and centroids are columns)
+# Conventions:
+# - dataset is `d×N` and centroids are `d×k` (points and centroids are columns)
 
-Returns `(centroids, assignments, iterations, converged)`.
-"""
+# Returns `(centroids, assignments, iterations, converged)`.
 function _simplekmeans(
     dataset::Matrix{Float64},
     initialCentroids::Matrix{Float64},
@@ -182,11 +178,9 @@ function _simplekmeans(
     return centroids, assignedto, maxiter, converged
 end
 
-"""
-Core BKMeans routine.
+# Core BKMeans routine.
 
-Returns `(centroids, assignments, total_iters, converged, inertia)`.
-"""
+# Returns `(centroids, assignments, total_iters, converged, inertia)`.
 function _bkmeans(
     self::BKMeansAlgorithm,
     dataset::Matrix{Float64},
