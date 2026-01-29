@@ -13,7 +13,7 @@ Conventions:
 - The centers matrix follows the same convention: each column is a cluster center.
 
 Fields:
-- centers::Matrix{T}
+- centers::AbstractMatrix{T}
     The final cluster centers as a d×k matrix, where d is the number of features
     and k is the number of clusters.
 
@@ -36,10 +36,10 @@ Fields:
 - init_method::Symbol
     The initialization method used for the run, e.g. :random or :kmeanspp.
 """
-struct KMeansResult{T<:AbstractMatrix{T}}
+struct KMeansResult{K<: Real, T<:AbstractMatrix{K}}
     centers::T
     assignments::Vector{Int}
-    inertia::T
+    inertia::K
     iterations::Int
     converged::Bool
     init_method::Symbol
