@@ -33,7 +33,7 @@ Fields:
 - `max_iter`: Maximum number of iterations to run before aborting
 - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
 - `rng`: Random Number Generator to use for generating the initial medoid centers
-- `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number
+- `distance_fun`: Cost function to calculate the distance between two points. This function must take two pairs of coordinates and return a number where greater values represent greater distnaces. Default is squared Euclidean distance.
 """
 struct KMedoidsAlgorithm{T<:Function, R <: AbstractMatrix{<:Real}, K <: AbstractRNG} <: KMeansAlgorithm
     data::R

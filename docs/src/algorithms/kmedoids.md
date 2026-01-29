@@ -19,10 +19,10 @@ Comparison to K-Means:
 - **Disadvantages:**
   - Computationally more expensive than K-Means ($O(k(n-k)^2)$ > $O(n \cdot k \cdot d \cdot i)$) per iteration)
     - where:
-      - $n$: number of data points
-      - $k$: number of clusters
-      - $d$: dimensionality
-      - $i$: number of iterations until convergence
+      - n: number of data points
+      - k: number of clusters
+      - d: dimensionality
+      - i: number of iterations until convergence
 
 ## Implementation Details
 
@@ -90,8 +90,8 @@ println("Converged: ", result.converged)
 > For the non-overloaded version, see the [main documentation page](../index.md).
 
 ```@docs
-KMeansClustering.kmeans(::KMedoidsAlgorithm)
 KMeansClustering.KMedoidsAlgorithm
+KMeansClustering.kmeans(::KMedoidsAlgorithm)
 ```
 
 ## Examples
