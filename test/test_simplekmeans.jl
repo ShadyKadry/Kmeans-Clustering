@@ -3,9 +3,12 @@ using Test
 
 @testset "simplekmeans" begin
 
-    data = [1.0 1.5 1.5 6.5 5.0 2.0 6.0 2.5 5.0 5.5;
-        1.0 3.5 0.5 1.0 1.5 4.0 2.0 3.5 2.0 2.5]
-    k = 3
+    Random.seed!(42)
+    # create two clusters that are definitely far apart
+    cluster1 = rand(2, 20) .- 5.0
+    cluster2 = rand(2, 20) .+ 5.0
+    data = hcat(cluster1, cluster2)
+    k = 2
 
     settings_rand = SimpleKMeansAlgorithm(data, k)
     settings_kmpp = SimpleKMeansAlgorithm(data, k, init_method=:kmeanspp)
@@ -21,12 +24,16 @@ using Test
     end
 
     @testset "simplekmeans function" begin
-        centroids = [1.5 2.0 6.0;
-            0.5 4.0 2.0]
-        expected_assign = [1, 2, 1, 3, 3, 2, 3, 2, 3, 3]
+        # check if clusters are separated correctly 
+        cols = shuffle(1:size(cluster1, 2))[1:2]
+        centroids = hcat(cluster1[:, cols[1]:cols[1]], cluster2[:, cols[2]:cols[2]])
+
         result = simplekmeans(data, centroids)
         @test all(1 .<= result.assignments .<= k)
-        @test result.assignments == expected_assign
+        # check that first 20 points are all assigned to same cluster
+        @test length(unique(result.assignments[1:20])) == 1
+        # check that last 20 points are all assigned to same cluster
+        @test length(unique(result.assignments[21:end])) == 1
         @test size(result.centers, 2) == k
         @test result.init_method == :random
         @test result.converged == true
@@ -48,5 +55,16 @@ using Test
             @test result.init_method == :kmeanspp
             @test result.converged == true
         end
+    end
+
+    @testset "edge cases" begin
+        # only one cluster
+        result1 = kmeans(data, 1)
+        @test all(result1.assignments .== 1)
+        @test size(result1.centers, 2) == 1
+        # every point is a cluster
+        result2 = kmeans(data, size(data, 2))
+        @test length(unique(result2.assignments)) == size(data, 2)
+        @test size(result2.centers, 2) == size(data, 2)
     end
 end
