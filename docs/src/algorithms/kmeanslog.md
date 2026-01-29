@@ -46,8 +46,6 @@ println("Converged: ", result.converged)
 
 ## Parameters
 
-> For the non-overloaded version, see the [main documentation page](../index.md).
-
 ```@docs
 KMeansClustering.kmeans(::KMeansLogAlgorithm)
 KMeansClustering.KMeansLogAlgorithm

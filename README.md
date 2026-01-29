@@ -34,7 +34,7 @@ Random.seed!(42)
 X = randn(2, 100)  # 2 features, 100 observations
 
 # Perform k-means clustering with 3 clusters
-result = kmeans(X, 3)
+result = kmeans(SimpleKMeansAlgorithm(X, 3))
 
 # Access results
 println("Cluster centers: ", result.centers)

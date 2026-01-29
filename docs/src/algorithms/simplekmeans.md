@@ -24,27 +24,7 @@ The algorithm supports two kinds of initialization:
 
 ## Usage
 
-### Basic Usage with `kmeans` Function
-
-```@example simplekmeans_1
-using KMeansClustering
-
-# Generate sample data
-X = rand(2, 100)  # 2 features, 100 observations
-
-# Perform simple K-Means clustering with 3 clusters
-# defaults to :random initialization
-result = kmeans(X, 3)
-
-println("Cluster assignments: ", result.assignments)
-println("Final centroids: ", result.centers)
-println("Total inertia: ", result.inertia)
-println("Converged: ", result.converged)
-```
-
-### Advanced Usage with Settings Object
-
-For more control over the algorithm, use the `SimpleKMeansAlgorithm` settings object:
+### Basic Usage
 
 ```@example simplekmeans_2
 using KMeansClustering
@@ -58,8 +38,6 @@ result = kmeans(settings)
 ```
 
 ## Parameters
-
-> For the non-overloaded version, see the [main documentation page](../index.md).
 
 ```@docs
 KMeansClustering.kmeans(::SimpleKMeansAlgorithm)

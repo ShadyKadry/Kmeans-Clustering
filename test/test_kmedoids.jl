@@ -36,39 +36,23 @@ using KMeansClustering
         end
     end
 
-    # Check that the single dispatch yields the same results as the multiple dispatch version
-    @testset "single dispatch vs multiple dispatch" begin
-        base = kmeans(
+    # Ensure that the same seed produces the exact same results and we dont use some unknown rng inbetween
+    @testset "Reproducibility" begin
+        res1 = kmeans(KMedoidsAlgorithm(
             X,
-            clusters;
-            method=:kmedoids,
-            maxiter=100,
-            tol=1e-4,
-            rng=MersenneTwister(42)
-        )
-
-        multiple_dispatch = KMedoidsAlgorithm(
-            X,
-            clusters;
+            5;
             max_iter=100,
             tol=1e-4,
             rng=MersenneTwister(42)
-        )
-        multiple_dispatch = kmeans(multiple_dispatch)
+        ))
 
-
-        @test base.centers == multiple_dispatch.centers
-        @test base.assignments == multiple_dispatch.assignments
-        @test base.inertia == multiple_dispatch.inertia
-        @test base.iterations == multiple_dispatch.iterations
-        @test base.converged == multiple_dispatch.converged
-        @test base.init_method == multiple_dispatch.init_method
-    end
-
-    # Ensure that the same seed produces the exact same results and we dont use some unknown rng inbetween
-    @testset "Reproducibility" begin
-        res1 = kmeans(X, 5, method=:kmedoids, rng=MersenneTwister(42))
-        res2 = kmeans(X, 5, method=:kmedoids, rng=MersenneTwister(42))
+        res2 = kmeans(KMedoidsAlgorithm(
+            X,
+            5;
+            max_iter=100,
+            tol=1e-4,
+            rng=MersenneTwister(42)
+        ))
 
         @test res1.assignments == res2.assignments
         @test res1.centers == res2.centers
@@ -108,13 +92,19 @@ using KMeansClustering
     end
 
     @testset "Edge Case: Single Cluster" begin
-        res_k1 = kmeans(X, 1, method=:kmedoids)
+        res_k1 = kmeans(KMedoidsAlgorithm(
+            X,
+            1
+        ))
         @test size(res_k1.centers, 2) == 1
         @test all(a == 1 for a in res_k1.assignments)
     end
 
     @testset "Edge Case: Every point is its own medoid" begin
-        res_kn = kmeans(X, size(X, 2), method=:kmedoids)
+        res_kn = kmeans(KMedoidsAlgorithm(
+            X,
+            size(X, 2)
+        ))
         @test size(res_kn.centers, 2) == size(X, 2)
         @test length(unique(res_kn.assignments)) == size(X, 2)
     end
@@ -122,7 +112,7 @@ using KMeansClustering
     @testset "Bound Checks" begin
         X_small = rand(2, 5)
 
-        @test_throws ArgumentError kmeans(X_small, size(X_small, 2) + 1, method=:kmedoids)
+        @test_throws ArgumentError kmeans(KMedoidsAlgorithm(X_small, size(X_small, 2) + 1))
 
         # Test with settings struct as well
         settings_too_many = KMeansClustering.KMedoidsAlgorithm(
@@ -133,7 +123,7 @@ using KMeansClustering
         @test_throws ArgumentError kmeans(settings_too_many)
 
         # Test case: n_clusters < 1
-        @test_throws ArgumentError kmeans(X_small, 0, method=:kmedoids)
+        @test_throws ArgumentError kmeans(KMedoidsAlgorithm(X_small, 0))
 
         settings_too_few = KMeansClustering.KMedoidsAlgorithm(
             X_small,
@@ -145,7 +135,7 @@ using KMeansClustering
 
     # max_iter = 1: Should stop after one iteration
     @testset "Iterations" begin
-        res_limited = kmeans(X, 10, method=:kmedoids, maxiter=1)
+        res_limited = kmeans(KMedoidsAlgorithm(X, 10, max_iter=1))
         @test res_limited.iterations <= 1
     end
 end

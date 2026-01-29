@@ -34,7 +34,7 @@ struct SimpleKMeansAlgorithm{K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG
         rng::N=Random.GLOBAL_RNG
     ) where {K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG}
         n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
-        n_clusters < size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
+        n_clusters <= size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
         init_method in (:random, :kmeanspp) || throw(ArgumentError("unknown init_method"))
         new{K, T, N}(data, n_clusters, init_method, max_iter, tol, rng)
     end

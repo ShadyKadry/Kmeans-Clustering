@@ -36,25 +36,7 @@ The algorithm expects data in column-major format:
 
 ## Usage
 
-### Basic Usage with `kmeans` Function
-
-```@example kmedoids_1
-using KMeansClustering
-
-# Generate sample data
-X = rand(2, 100)  # 2 features, 100 observations
-
-# Perform K-Medoids clustering with 3 clusters
-# defaults to euclidian distance
-result = kmeans(X, 3, method=:kmedoids)
-
-println("Cluster assignments: ", result.assignments)
-println("Medoids: ", result.centers)
-println("Total inertia: ", result.inertia)
-println("Converged: ", result.converged)
-```
-
-### Advanced Usage with Settings Object
+### Basic Usage
 
 For more control over the algorithm, use the `KMedoidsAlgorithm` settings object:
 
@@ -87,8 +69,6 @@ println("Converged: ", result.converged)
 
 ## Parameters
 
-> For the non-overloaded version, see the [main documentation page](../index.md).
-
 ```@docs
 KMeansClustering.KMedoidsAlgorithm
 KMeansClustering.kmeans(::KMedoidsAlgorithm)
@@ -109,7 +89,7 @@ data = hcat(
 )
 
 # Cluster the data
-result = kmeans(data, 3, method=:kmedoids, maxiter=100, tol=1e-4)
+result = kmeans(KMedoidsAlgorithm(data, 3, max_iter=100, tol=1e-4))
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
