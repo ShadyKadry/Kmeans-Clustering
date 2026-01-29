@@ -26,7 +26,7 @@ using LinearAlgebra: norm
 # - `maxinneriter::Int`
 #     Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
 # - `eps`
-#     epsilon to avoid `log(0)`
+#     epsilon to avoid `log` of 0 and division by 0 during computation of the heuristic and cluster points.
 # Returns a `KMeansResult`
 # """
 function kmeanslog(
@@ -36,7 +36,7 @@ function kmeanslog(
   tol::Real;
   maxiter::Int=100,
   maxinneriter::Int=100,
-  eps::Real=1e-12) where {K <: Real, T<:AbstractMatrix{<:K}}
+  eps::Real=1e-12) where {K<:Real,T<:AbstractMatrix{<:K}}
   N = size(dataset, 2)
   # a mapping from an index in the data set to an index in the clusters.
   cluster_map = Vector{Int}(undef, N)
@@ -146,7 +146,7 @@ Fields:
 - `eps`
     epsilon to avoid `log(0)`
 """
-struct KMeansLogAlgorithm{K <: Real, T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
+struct KMeansLogAlgorithm{K<:Real,T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
   dataset::T
   n_clusters::Int
   tol::Real
@@ -161,8 +161,8 @@ struct KMeansLogAlgorithm{K <: Real, T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
     maxiter::Int=100,
     maxinneriter::Int=100,
     eps::Real=1e-12
-  ) where {K <: Real, T<:AbstractMatrix{<:K}}
-    new{K, T}(dataset, n_clusters, tol, maxiter, maxinneriter, eps)
+  ) where {K<:Real,T<:AbstractMatrix{<:K}}
+    new{K,T}(dataset, n_clusters, tol, maxiter, maxinneriter, eps)
   end
 end
 """
