@@ -1,14 +1,14 @@
 using LinearAlgebra: norm
 
 """
-    kmeanslog{T<:AbstractMatrix{<:Real}}(
-        dataset::T,
-        initialcentroids::T,
-        init_method::Symbol,
-        tol::Real;
-        maxiter::Int=100,
-        maxinneriter::Int=100,
-        eps::Real=1e-12)
+  kmeanslog(
+    dataset::T,
+    initialcentroids::T,
+    init_method::Symbol,
+    tol::Real;
+    maxiter::Int=100,
+    maxinneriter::Int=100,
+    eps::Real=1e-12) where {T<:AbstractMatrix{<:Real}}
 Find clusters that minimize the sum of the log of the Euclidean norm.
 
 # Arguments
@@ -130,7 +130,7 @@ end
         maxiter::Int=100,
         maxinneriter::Int=100,
         eps::Real=1e-12
-    )
+    ) where {T<:AbstractMatrix{<:Real}}
 
 Fields:
 - `dataset::Matrix{Float64}`  
