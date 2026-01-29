@@ -1,34 +1,34 @@
 using LinearAlgebra: norm
 
-"""
-  kmeanslog(
-    dataset::T,
-    initialcentroids::T,
-    init_method::Symbol,
-    tol::Real;
-    maxiter::Int=100,
-    maxinneriter::Int=100,
-    eps::Real=1e-12) where {T<:AbstractMatrix{<:Real}}
-Find clusters that minimize the sum of the log of the Euclidean norm.
+# """
+#   kmeanslog(
+#     dataset::T,
+#     initialcentroids::T,
+#     init_method::Symbol,
+#     tol::Real;
+#     maxiter::Int=100,
+#     maxinneriter::Int=100,
+#     eps::Real=1e-12) where {T<:AbstractMatrix{<:Real}}
+# Find clusters that minimize the sum of the log of the Euclidean norm.
 
-# Arguments
-- `dataset::Matrix{Float64}`  
-    A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::Matrix{Float64}`  
-    A `dxk` matrix containing the starting `k` centroids.
-- `init_method::Symbol`  
-    Method for choosing initial medoids, e.g. :random, :kmeans++
-- `tol::Real`  
-    tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
-# Keyword Arguments
-- `maxiter::Int`  
-    Maximum number of iterations.
-- `maxinneriter::Int`
-    Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
-- `eps`
-    epsilon to avoid `log(0)`
-Returns a `KMeansResult`
-"""
+# # Arguments
+# - `dataset::Matrix{Float64}`  
+#     A `dxn` matrix where each column is a point and each row is a feature.
+# - `initialcentroids::Matrix{Float64}`  
+#     A `dxk` matrix containing the starting `k` centroids.
+# - `init_method::Symbol`  
+#     Method for choosing initial medoids, e.g. :random, :kmeans++
+# - `tol::Real`  
+#     tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
+# # Keyword Arguments
+# - `maxiter::Int`  
+#     Maximum number of iterations.
+# - `maxinneriter::Int`
+#     Maximum number of iterations for iterative reweighted least squares, which is used to compute the new cluster point.
+# - `eps`
+#     epsilon to avoid `log(0)`
+# Returns a `KMeansResult`
+# """
 function kmeanslog(
   dataset::T,
   initialcentroids::T,
