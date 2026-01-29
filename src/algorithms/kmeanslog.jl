@@ -165,7 +165,25 @@ struct KMeansLogAlgorithm{T<:AbstractMatrix{<:Real}} <: KMeansAlgorithm
     new{T}(dataset, n_clusters, tol, maxiter, maxinneriter, eps)
   end
 end
+"""
+    kmeans(settings::SimpleKMeansAlgorithm)
 
+Entry point for simple kmeans clustering using a settings object.
+
+# Arguments
+- `settings::SimpleKMeansAlgorithm`: Settings object. See object description for more information
+
+# Returns
+A `KMeansResult`.
+
+# Example
+```julia
+settings = KMeansClustering.SimpleKMeansAlgorithm(X, cluster_count)
+result = kmeans(settings)
+```
+
+See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=GLOBAL_RNG)`](@ref)
+"""
 function kmeans(self::KMeansLogAlgorithm)
   n_points = size(self.dataset, 2)
   if self.n_clusters < 1
