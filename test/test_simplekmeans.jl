@@ -17,14 +17,14 @@ using Test
         @test settings_rand.data == data
         @test settings_rand.n_clusters == k
         @test_throws ArgumentError SimpleKMeansAlgorithm(data, 0)
-        # more wanted clusters than points 
+        # more wanted clusters than points
         @test_throws ArgumentError SimpleKMeansAlgorithm(data, size(data, 2) + 1)
         # invalid init_method
         @test_throws ArgumentError SimpleKMeansAlgorithm(data, k, init_method=:km)
     end
 
     @testset "simplekmeans function" begin
-        # check if clusters are separated correctly 
+        # check if clusters are separated correctly
         cols = shuffle(1:size(cluster1, 2))[1:2]
         centroids = hcat(cluster1[:, cols[1]:cols[1]], cluster2[:, cols[2]:cols[2]])
 
@@ -59,11 +59,11 @@ using Test
 
     @testset "edge cases" begin
         # only one cluster
-        result1 = kmeans(data, 1)
+        result1 = kmeans(SimpleKMeansAlgorithm(data, 1))
         @test all(result1.assignments .== 1)
         @test size(result1.centers, 2) == 1
         # every point is a cluster
-        result2 = kmeans(data, size(data, 2))
+        result2 = kmeans(SimpleKMeansAlgorithm(data, size(data, 2)))
         @test length(unique(result2.assignments)) == size(data, 2)
         @test size(result2.centers, 2) == size(data, 2)
     end
