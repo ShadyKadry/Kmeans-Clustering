@@ -104,10 +104,6 @@ using Test
         res2 = KMeansClustering.bkmeans_fit(data, k; max_iter=30, tol=1e-4, nstart=3, rng=MersenneTwister(777))
         @test size(res2.centers, 2) == k
         @test res2.init_method == :bkmeans
-
-        res3 = kmeans(data, k; method=:bkmeans, maxiter=30, tol=1e-4, nstart=3, rng=MersenneTwister(888))
-        @test size(res3.centers, 2) == k
-        @test res3.init_method == :bkmeans
     end
 
     @testset "_bkmeans: invalid splits -> continue + fallback path (isempty(best_assign2))" begin

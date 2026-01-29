@@ -37,29 +37,7 @@ The algorithm expects data in column-major format:
 
 ## Usage
 
-### Basic Usage with `kmeans` Function
-
-```@example
-using KMeansClustering
-using Random
-
-# Generate sample data
-rng = MersenneTwister(42)
-X = rand(rng, 2, 100)  # 2 features, 100 observations
-
-# Perform BKMeans clustering with 3 clusters
-result = kmeans(X, 3, method=:bkmeans, maxiter=50, tol=1e-4, nstart=10, rng=rng)
-
-println("Cluster assignments: ", result.assignments)
-println("Centers: ", result.centers)
-println("Total inertia (SSE): ", result.inertia)
-println("Converged: ", result.converged)
-println("Iterations (sum over all 2-means splits): ", result.iterations)
-```
-
-### Advanced Usage with Settings Object
-
-For more control over the algorithm, use the BKMeansAlgorithm settings object:
+### Basic Usage
 
 ```@example
 using KMeansClustering
@@ -88,8 +66,6 @@ println("Converged: ", result.converged)
 
 ## Parameters
 
-> For the non-overloaded version, see the [main documentation page](../index.md).
-
 ```@docs
 KMeansClustering.kmeans(::BKMeansAlgorithm)
 KMeansClustering.BKMeansAlgorithm
@@ -113,7 +89,7 @@ data = hcat(
 )
 
 # Cluster the data
-result = kmeans(data, 3, method=:bkmeans, maxiter=60, tol=1e-4, nstart=10, rng=rng)
+result = kmeans(BKMeansAlgorithm(data, 3, maxiter=60, tol=1e-4, nstart=10, rng=rng))
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
@@ -131,8 +107,8 @@ rng = MersenneTwister(99)
 # Slightly elongated cloud (2×200)
 X = vcat(randn(rng, 1, 200), randn(rng, 1, 200) .* 0.3)
 
-res_low  = kmeans(X, 4, method=:bkmeans, maxiter=40, tol=1e-4, nstart=1,  rng=MersenneTwister(1))
-res_high = kmeans(X, 4, method=:bkmeans, maxiter=40, tol=1e-4, nstart=20, rng=MersenneTwister(1))
+res_low  = kmeans(BKMeansAlgorithm(X, 4, maxiter=40, tol=1e-4, nstart=1,  rng=MersenneTwister(1)))
+res_high = kmeans(BKMeansAlgorithm(X, 4, maxiter=40, tol=1e-4, nstart=20, rng=MersenneTwister(1)))
 
 println("Inertia with nstart=1:  ", res_low.inertia)
 println("Inertia with nstart=20: ", res_high.inertia)
