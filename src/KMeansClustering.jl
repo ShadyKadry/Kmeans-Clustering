@@ -19,7 +19,6 @@ include("algorithms/bkmeans.jl")
 include("algorithms/kmeanslog.jl")
 
 using .AlgorithmsKMeansPP: kmeanspp_init
-using .KMeansLog: kmeanslog
 
 """
     kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, nstart=10, rng=Random.GLOBAL_RNG)
@@ -86,6 +85,6 @@ function kmeans(
     end
 end
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans, KMeansLogAlgorithm
 
 end # module
