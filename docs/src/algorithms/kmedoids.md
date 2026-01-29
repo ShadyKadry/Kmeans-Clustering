@@ -44,6 +44,7 @@ For more control over the algorithm, use the `KMedoidsAlgorithm` settings object
 using KMeansClustering
 using Random
 
+
 X = rand(2, 100) # Again 2 x 100
 
 settings = KMeansClustering.KMedoidsAlgorithm(
