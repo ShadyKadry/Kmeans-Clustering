@@ -36,8 +36,8 @@ Fields:
 - init_method::Symbol
     The initialization method used for the run, e.g. :random or :kmeanspp.
 """
-struct KMeansResult{T<:Real}
-    centers::Matrix{T}
+struct KMeansResult{T<:AbstractMatrix{T}}
+    centers::T
     assignments::Vector{Int}
     inertia::T
     iterations::Int
