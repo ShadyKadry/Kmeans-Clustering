@@ -86,14 +86,13 @@ rng = MersenneTwister(2)
 X = rand(rng, 2, 200)
 
 # Use k-means++ as initialization strategy
-settings = SimpleKMeansAlgorithm(X, 3; init_method_=:kmeanspp, rng=rng)
+settings = SimpleKMeansAlgorithm(X, 3; init_method=:kmeanspp, rng=rng)
 
 result = kmeans(settings)
 
 println("Centers: ", result.centers)
 println("Inertia: ", result.inertia)
 println("Converged: ", result.converged)
-
 ```
 
 ## Parameters
