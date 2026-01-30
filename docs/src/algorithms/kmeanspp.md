@@ -64,7 +64,7 @@ rng = MersenneTwister(1)
 X = [0.0  1.0  10.0 11.0;
      0.0  0.0  10.0 10.0]
 
-idxs = kmeanspp_init(X, 2; rng=rng)
+idxs = KMeansClustering.kmeanspp_init(X, 2; rng=rng)
 
 println("Initial center indices: ", idxs)
 
@@ -86,7 +86,7 @@ rng = MersenneTwister(2)
 X = rand(rng, 2, 200)
 
 # Use k-means++ as initialization strategy
-settings = SimpleKMeansAlgorithm(X, 3; init=:kmeanspp, rng=rng)
+settings = SimpleKMeansAlgorithm(X, 3; init_method_=:kmeanspp, rng=rng)
 
 result = kmeans(settings)
 
