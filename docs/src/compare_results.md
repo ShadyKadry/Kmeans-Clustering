@@ -43,7 +43,6 @@ Now we will use our [helper function](https://github.com/ShadyKadry/Kmeans-Clust
     label_kmpp = kmeanspp_clustering_result.assignments # hide
     label_kmed = kmed_clustering_result.assignments
     label_logkm = logkm_clustering_result.assignments # hide
-    label_bkm = bk_clustering_result.assignments # hide
 
     adjusted_rand_index(label_km, label_kmed)
 ```
