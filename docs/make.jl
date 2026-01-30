@@ -19,6 +19,7 @@ makedocs(;
         "Algorithms" => [
             "K-Medoids" => "algorithms/kmedoids.md",
             "Simple KMeans" => "algorithms/simplekmeans.md",
+            "K-Means++ Initialization" => "algorithms/kmeanspp.md",
             "KMeans with Log Heuristic" => "algorithms/kmeanslog.md",
             "Bisecting K-Means" => "algorithms/bkmeans.md"
         ]

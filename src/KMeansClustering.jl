@@ -31,7 +31,6 @@ include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
 include("algorithms/kmeanslog.jl")
 
-using .AlgorithmsKMeansPP: kmeanspp_init
 
 export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, KMeansLogAlgorithm
 

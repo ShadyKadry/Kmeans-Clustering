@@ -1,5 +1,3 @@
-module AlgorithmsKMeansPP
-
 using Random
 
 # Compute squared Euclidean distance between two observations (columns) in X.
@@ -53,22 +51,26 @@ function _weighted_sample_index(
 
     error("weighted sampling failed: no unchosen indices found")
 end
+#=
+"""
 
-#
-#     kmeanspp_init(X, k; rng=Random.GLOBAL_RNG)
-#
-# Select `k` initial centers using the k-means++ heuristic.
-#
-# Arguments
-# - X: data matrix with features in rows and observations in columns.
-# - k: number of clusters.
-#
-# Keyword arguments
-# - rng: random number generator.
-#
-# Returns
-# - A vector of length `k` with indices into the columns of `X`, indicating which
-#   points are chosen as initial centers.
+     kmeanspp_init(X, k; rng=Random.GLOBAL_RNG)
+
+ Select `k` initial centers using the k-means++ heuristic.
+
+ Arguments
+ - X: data matrix with features in rows and observations in columns.
+ - k: number of clusters.
+
+ Keyword arguments
+ - rng: random number generator.
+
+  Returns
+ - A vector of length `k` with indices into the columns of `X`, indicating which
+  points are chosen as initial centers.
+
+"""
+=#
 function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
                        rng::AbstractRNG = Random.GLOBAL_RNG)
 
@@ -127,5 +129,3 @@ function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
 
     return chosen_idxs
 end
-
-end # module
