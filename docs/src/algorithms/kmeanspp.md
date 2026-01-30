@@ -31,8 +31,9 @@ The implementation expects data in column-major format:
 - Columns represent individual data points/observations.
 
 The function
-
+```julia
 kmeanspp_init(X, k; rng=Random.GLOBAL_RNG)
+```
 
 
 returns a vector of k column indices into X that are selected as initial centers using the k-means++ rule
