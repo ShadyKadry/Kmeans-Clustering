@@ -15,6 +15,7 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
+        "Comparing Results" => "compare_results.md",
         "Algorithms" => [
             "K-Medoids" => "algorithms/kmedoids.md",
             "Simple KMeans" => "algorithms/simplekmeans.md",
