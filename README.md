@@ -53,24 +53,18 @@ See the [examples](https://github.com/ShadyKadry/Kmeans-Clustering/tree/main/exa
 
 The standard k-means algorithm using Lloyd's algorithm. Iteratively assigns points to the nearest centroid and updates centroids as the mean of assigned points.
 
-**Method**: `:kmeans`
-
 ### K-Medoids
 
 Based on [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/). Unlike typical k-means, k-medoids chooses cluster centers from the actual data points instead of calculating artificial centroids. This makes it more interpretable and robust to outliers.
-
-**Method**: `:kmedoids`
 
 ### K-Means++
 
 An improved initialization method that spreads out the initial cluster centers, leading to better and more consistent results.
 
-**Initialization**: `:kmeanspp`
-
 ### Bisecting K-Means
 
 A hierarchical variant that recursively splits clusters to achieve the desired number of clusters.
 
-### Constrained K-Means
+### K-Means with Log Heuristic
 
-K-means with additional constraints on cluster assignments or properties.
+Variant that minimizes the logarithm of the distance instead of the distance.
