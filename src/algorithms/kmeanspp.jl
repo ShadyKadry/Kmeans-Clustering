@@ -4,9 +4,9 @@ using Random
 
 # Compute squared Euclidean distance between two observations (columns) in X.
 # Returns Float64 to keep distance accumulation stable across integer/float inputs.
-@inline function _sqeuclid_cols(X::AbstractMatrix{<:Real}, j::Int, c::Int)::Float64
+function _sqeuclid_cols(X::AbstractMatrix{<:Real}, j, c)
     s = 0.0
-    @inbounds for i in axes(X, 1)
+    for i in axes(X, 1)
         d = X[i, j] - X[i, c]
         s += d * d
     end
@@ -15,10 +15,13 @@ end
 
 # Sample an index proportional to weights in `w` over the not-yet-chosen elements.
 # Falls back to uniform sampling if all weights are zero (degenerate data).
-function _weighted_sample_index(w::AbstractVector{<:Real}, chosen::AbstractVector{Bool}, rng::AbstractRNG)::Int
-    n = length(w)
+function _weighted_sample_index(
+    w::AbstractVector{<:Real},
+    chosen::AbstractVector{Bool},
+    rng::AbstractRNG,
+)
     total = 0.0
-    @inbounds for i in 1:n
+    for i in eachindex(w, chosen)
         if !chosen[i]
             total += float(w[i])
         end
@@ -26,17 +29,13 @@ function _weighted_sample_index(w::AbstractVector{<:Real}, chosen::AbstractVecto
 
     if total == 0.0 || !isfinite(total)
         # Degenerate case (e.g., all points identical): choose uniformly among unchosen.
-        while true
-            idx = rand(rng, 1:n)
-            if !chosen[idx]
-                return idx
-            end
-        end
+        unchosen = [i for i in eachindex(w, chosen) if !chosen[i]]
+        return rand(rng, unchosen)
     end
 
     u = rand(rng) * total
     acc = 0.0
-    @inbounds for i in 1:n
+    for i in eachindex(w, chosen)
         if !chosen[i]
             acc += float(w[i])
             if u <= acc
@@ -46,7 +45,7 @@ function _weighted_sample_index(w::AbstractVector{<:Real}, chosen::AbstractVecto
     end
 
     # Numeric fallthrough: return the last unchosen index.
-    @inbounds for i in n:-1:1
+    for i in reverse(eachindex(w, chosen))
         if !chosen[i]
             return i
         end
@@ -68,8 +67,8 @@ end
 # - rng: random number generator.
 #
 # Returns
-# points are chosen as initial centers.
-# A vector of length `k` with indices into the columns of `X`, indicating which
+# - A vector of length `k` with indices into the columns of `X`, indicating which
+#   points are chosen as initial centers.
 function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
                        rng::AbstractRNG = Random.GLOBAL_RNG)
 
@@ -92,7 +91,7 @@ function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
     chosen_mask = falses(n)
 
     # 1) Choose the first center uniformly at random.
-    first = rand(rng, 1:n)
+    first = rand(rng, eachindex(chosen_mask))
     chosen_idxs[1] = first
     chosen_mask[first] = true
 
@@ -101,7 +100,7 @@ function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
     mind2[first] = 0.0
 
     # Initialize distances using the first chosen center.
-    @inbounds for j in 1:n
+    for j in eachindex(mind2)
         if !chosen_mask[j]
             mind2[j] = _sqeuclid_cols(X, j, first)
         end
@@ -116,7 +115,7 @@ function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
         mind2[next] = 0.0
 
         # Update mind2 with the new center: mind2[j] = min(mind2[j], dist2(j, next)).
-        @inbounds for j in 1:n
+        for j in eachindex(mind2)
             if !chosen_mask[j]
                 d2 = _sqeuclid_cols(X, j, next)
                 if d2 < mind2[j]
