@@ -10,12 +10,12 @@ The k-means++ algorithm is a smarter way to choose initial cluster centers for t
 
 ## Random vs k-means++ initialization
 
-- - **Random (Forgy) initialization:**
+- **Random (Forgy) initialization:**
     - All k centers are chosen uniformly at random from the data points.
     - Very simple and cheap.
     - Can produce bad initial configurations where several centers start in the same dense region, leading to slow convergence or poor local optima.
 
-  -**k-means++ initialization:**
+  - **k-means++ initialization:**
     - First center is chosen uniformly at random.
     - Each additional center is chosen with probability proportional to the squared distance to the closest existing center.
     - Tends to place centers in different high-density regions of the space.

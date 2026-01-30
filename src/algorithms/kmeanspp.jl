@@ -51,6 +51,7 @@ function _weighted_sample_index(
 
     error("weighted sampling failed: no unchosen indices found")
 end
+#=
 """
 
      kmeanspp_init(X, k; rng=Random.GLOBAL_RNG)
@@ -69,6 +70,7 @@ end
   points are chosen as initial centers.
 
 """
+=#
 function kmeanspp_init(X::AbstractMatrix{<:Real}, k::Integer;
                        rng::AbstractRNG = Random.GLOBAL_RNG)
 
