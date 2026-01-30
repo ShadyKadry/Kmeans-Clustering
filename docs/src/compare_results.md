@@ -41,7 +41,7 @@ We will start by running two different K-means clusterings, e.g. the [Simple KMe
 
 ```
 
-Now we will use our [helper function](../../examples/compare_results.jl) to check our two clusterings for **similarity** by comparing the assignment vectors of both results.
+Now we will use our [helper function](https://github.com/ShadyKadry/Kmeans-Clustering/blob/adjusted_rand_index/examples/compare_results.jl) to check our two clusterings for **similarity** by comparing the assignment vectors of both results.
 
 ```@example ari
     label_km = simple_clustering_result.assignments
