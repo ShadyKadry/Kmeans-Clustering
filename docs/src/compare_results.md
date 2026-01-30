@@ -33,7 +33,7 @@ We will start by running two different K-means clusterings, e.g. the [Simple KMe
     logkm_clustering_result = # hide
         KMeansClustering.kmeans( # hide
             KMeansClustering.KMeansLogAlgorithm(X, cluster_count, 0.8) # hide
-        )  
+        ) # hide
     bk_clustering_result = # hide
         KMeansClustering.kmeans( # hide
             KMeansClustering.BKMeansAlgorithm(X, cluster_count) # hide  
