@@ -32,6 +32,6 @@ include("algorithms/bkmeans.jl")
 include("algorithms/kmeanslog.jl")
 
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans, KMeansLogAlgorithm
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, KMeansLogAlgorithm
 
 end # module

@@ -10,6 +10,8 @@ The simple K-Means algorithm performs clustering on a dataset following Lloyd's 
 
 ## Implementation Details
 
+This implementation is based on the [description and pseudocode](https://en.wikipedia.org/wiki/K-means_clustering#Standard_algorithm_(naive_k-means)) from Wikipedia
+
 ### Data Format
 
 The algorithm expects data in column-major format:

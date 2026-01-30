@@ -18,11 +18,15 @@ The algorithm expects data in column-major format:
 
 ### Initialization
 
-`k` random points are chosen from the dataset as initial centers
+`k` random points are chosen from the dataset as initial centers.
 
 ### Cluster Computation
 
 The cluster centers are computed by [iteratively reweighted least squares(IRLS)](https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares). The maximum number of iterations for each cluster computation can be set with the `maxinnteriter` attribute of `KMeansLogAlgorithm`. 
+
+### Inertia
+
+The value of inertia is computed differently from the other K Means algorithms as the heuristic is the logarithm of the distance. It is computed by finding the sum of the logarithm of all distances from the assigned cluster centers.
 
 ## Usage
 
