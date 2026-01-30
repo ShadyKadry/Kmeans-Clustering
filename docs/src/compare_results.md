@@ -34,11 +34,6 @@ We will start by running two different K-means clusterings, e.g. the [Simple KMe
         KMeansClustering.kmeans( # hide
             KMeansClustering.KMeansLogAlgorithm(X, cluster_count, 0.8) # hide
         ) # hide
-    bk_clustering_result = # hide
-        KMeansClustering.kmeans( # hide
-            KMeansClustering.BKMeansAlgorithm(X, cluster_count) # hide 
-        )  # hide
-
 ```
 
 Now we will use our [helper function](https://github.com/ShadyKadry/Kmeans-Clustering/blob/main/examples/compare_results.jl) to check our two clusterings for **similarity** by comparing the assignment vectors of both results.
