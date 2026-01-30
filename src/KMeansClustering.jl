@@ -33,6 +33,6 @@ include("algorithms/kmeanslog.jl")
 
 using .AlgorithmsKMeansPP: kmeanspp_init
 
-export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans, KMeansLogAlgorithm
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, KMeansLogAlgorithm
 
 end # module

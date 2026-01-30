@@ -28,7 +28,7 @@ using Test
         cols = shuffle(1:size(cluster1, 2))[1:2]
         centroids = hcat(cluster1[:, cols[1]:cols[1]], cluster2[:, cols[2]:cols[2]])
 
-        result = simplekmeans(data, centroids)
+        result = KMeansClustering.simplekmeans(data, centroids)
         @test all(1 .<= result.assignments .<= k)
         # check that first 20 points are all assigned to same cluster
         @test length(unique(result.assignments[1:20])) == 1
@@ -38,7 +38,7 @@ using Test
         @test result.init_method == :random
         @test result.converged == true
         # data points and center points have different dimensions
-        @test_throws DimensionMismatch simplekmeans(data, centroids[1:end-1, :])
+        @test_throws DimensionMismatch KMeansClustering.simplekmeans(data, centroids[1:end-1, :])
     end
 
     @testset "kmeans" begin
