@@ -133,18 +133,12 @@ end
     ) where {T<:AbstractMatrix{<:Real}}
 
 Fields:
-- `dataset::Matrix{Float64}`
-    A `dxn` matrix where each column is a point and each row is a feature.
-- `initialcentroids::Matrix{Float64}`
-    A `dxk` matrix containing the starting `k` centroids.
-- `tol::Real`
-    tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
-- `maxiter::Int`
-    Maximum number of iterations.
-- `maxinneriter::Int`
-    Maximum number of iterations for iterative reweighted least squares(IRLS), which is used to compute the new cluster point.
-- `eps`
-    epsilon to avoid division by 0 or `log(0)` during computation.
+- `dataset::Matrix{Float64}`: A `dxn` matrix where each column is a point and each row is a feature.
+- `initialcentroids::Matrix{Float64}`:  A `dxk` matrix containing the starting `k` centroids.
+- `tol::Real`: tolerance threshold to determine convergence. Note that this number is the `log` of the distance from the cluster point.
+- `maxiter::Int`: Maximum number of iterations.
+- `maxinneriter::Int`: Maximum number of iterations for iterative reweighted least squares(IRLS), which is used to compute the new cluster point.
+- `eps::Real`: epsilon to avoid division by 0 or `log(0)` during computation.
 """
 struct KMeansLogAlgorithm{K<:Real,T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
   dataset::T
