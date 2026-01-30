@@ -17,7 +17,7 @@ Fields:
 - `tol`: Tolerance for abortion. If the improvement between iterations is smaller than `tol`, the algorithm aborts
 - `rng`: Random Number Generator for the initial centroids
 """
-struct SimpleKMeansAlgorithm{K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG} <: KMeansAlgorithm
+struct SimpleKMeansAlgorithm{K<:Real,T<:AbstractMatrix{K},N<:AbstractRNG} <: KMeansAlgorithm
     data::T
     n_clusters::Integer
     init_method::Symbol
@@ -32,11 +32,11 @@ struct SimpleKMeansAlgorithm{K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG
         max_iter::Integer=100,
         tol::Real=10e-4,
         rng::N=Random.GLOBAL_RNG
-    ) where {K <: Real, T <: AbstractMatrix{K}, N <: AbstractRNG}
+    ) where {K<:Real,T<:AbstractMatrix{K},N<:AbstractRNG}
         n_clusters > 0 || throw(ArgumentError("k must be larger than 0"))
         n_clusters <= size(data, 2) || throw(ArgumentError("number of clusters cannot be larger than number of points"))
         init_method in (:random, :kmeanspp) || throw(ArgumentError("unknown init_method"))
-        new{K, T, N}(data, n_clusters, init_method, max_iter, tol, rng)
+        new{K,T,N}(data, n_clusters, init_method, max_iter, tol, rng)
     end
 end
 
@@ -45,16 +45,19 @@ end
 #                  init_method::Symbol=:random,
 #                  maxiter::Int=100,
 #                  tol::Real=10e-4)
-
+#
 # Perform k-means clustering on a dataset following Lloyd's algorithm.
 # In each iteration step, the mean of each cluster becomes the new centroid.
-
+#
+# Implementation is based on the pseudocode from:
+# <https://en.wikipedia.org/wiki/K-means_clustering#Standard_algorithm_(naive_k-means)>
+#
 # # Arguments
 # - `dataset::AbstractMatrix`
 #     A `dxn` matrix where each column is a point and each row is a feature.
 # - `initialcentroids::AbstractMatrix`
 #     A `dxk` matrix containing the starting `k` centroids.
-
+#
 # # Keyword Arguments
 # - `init_method::Symbol`
 #     Method for choosing initial medoids, e.g. :random, :kmeans++
@@ -62,13 +65,13 @@ end
 #     Maximum number of iterations.
 # - `tol::Float64`
 #     tolerance threshold to determine convergence.
-
+#
 # Returns a `KMeansResult`
 function simplekmeans(dataset::T,
     initialcentroids::T;
     init_method::Symbol=:random,
     maxiter::Int=100,
-    tol::Float64=10e-4) where {K <: Real, T <: AbstractMatrix{K}}
+    tol::Float64=10e-4) where {K<:Real,T<:AbstractMatrix{K}}
 
     d, N = size(dataset)
     k = size(initialcentroids, 2)
