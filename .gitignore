@@ -6,3 +6,7 @@
 /docs/build/
 
 .vscode/settings.json
+
+.idea/
+
+.vs/
