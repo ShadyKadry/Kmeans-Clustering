@@ -7,6 +7,7 @@ CurrentModule = KMeansClustering
 ## Overview
 
 The K-Medoids algorithm is a robust variant of the K-Means algorithm, that, instead of creating artificial cluster centers, uses actual data points as centers. Just as calculating the median is more robust to outliers as the average is, the K-Medoids algorithm is more resistant to noise and outliers than K-Means.
+This implementation uses the Partitioning Around Medoids (PAM) approach. See the references below for an explanation.
 
 Comparison to K-Means:
 
@@ -16,11 +17,16 @@ Comparison to K-Means:
   - Works with any distance metric (not limited to Euclidean distance)
 
 - **Disadvantages:**
-  - Computationally more expensive than K-Means ($O(k(n-k)^2)$) per iteration)
+  - Computationally more expensive than K-Means ($O(k(n-k)^2)$ > $O(n \cdot k \cdot d \cdot i)$) per iteration)
+    - where:
+      - n: number of data points
+      - k: number of clusters
+      - d: dimensionality
+      - i: number of iterations until convergence
 
 ## Implementation Details
 
-This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [E.M. Mirkes, University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html).
+This implementation is based on the Partitioning Around Medoids (PAM) approach as described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/).
 
 ### Data Format
 
@@ -30,31 +36,14 @@ The algorithm expects data in column-major format:
 
 ## Usage
 
-### Basic Usage with `kmeans` Function
-
-```@example kmedoids_1
-using KMeansClustering
-
-# Generate sample data
-X = rand(2, 100)  # 2 features, 100 observations
-
-# Perform K-Medoids clustering with 3 clusters
-# defaults to euclidian distance
-result = kmeans(X, 3, method=:kmedoids)
-
-println("Cluster assignments: ", result.assignments)
-println("Medoids: ", result.centers)
-println("Total inertia: ", result.inertia)
-println("Converged: ", result.converged)
-```
-
-### Advanced Usage with Settings Object
+### Basic Usage
 
 For more control over the algorithm, use the `KMedoidsAlgorithm` settings object:
 
 ```@example kmedoids_2
 using KMeansClustering
 using Random
+
 
 X = rand(2, 100) # Again 2 x 100
 
@@ -72,22 +61,25 @@ settings = KMeansClustering.KMedoidsAlgorithm(
 
 # Run clustering using multiple dispatch
 result = kmeans(settings)
+
+println("Cluster assignments: ", result.assignments)
+println("Medoids: ", result.centers)
+println("Total inertia: ", result.inertia)
+println("Converged: ", result.converged)
 ```
 
 ## Parameters
 
-> For the non-overloaded version, see the [main documentation page](../index.md).
-
 ```@docs
-KMeansClustering.kmeans(::KMedoidsAlgorithm)
 KMeansClustering.KMedoidsAlgorithm
+KMeansClustering.kmeans(::KMedoidsAlgorithm)
 ```
 
 ## Examples
 
 ### Example 1: Basic Clustering
 
-```julia
+```@example kmedoids_3
 using KMeansClustering
 
 # Create sample data: 3 Gaussian clusters
@@ -98,39 +90,19 @@ data = hcat(
 )
 
 # Cluster the data
-result = kmeans(data, 3, method=:kmedoids, maxiter=100, tol=1e-4)
+result = kmeans(KMedoidsAlgorithm(data, 3, max_iter=100, tol=1e-4))
 
 println("Number of iterations: ", result.iterations)
 println("Converged: ", result.converged)
-println("Inertia: ", result.totalcost)
-```
-
-### Example 2: Reproducible Results
-
-```julia
-using KMeansClustering
-using Random
-
-X = rand(5, 200)  # 5 features, 200 observations
-
-# Set seed for reproducibility
-rng = MersenneTwister(42)
-
-result1 = kmeans(X, 4, method=:kmedoids, rng=rng)
-rng = MersenneTwister(42)
-result2 = kmeans(X, 4, method=:kmedoids, rng=rng)
-
-# Results will be identical
-@assert result1.assignments == result2.assignments
+println("Inertia: ", result.inertia)
 ```
 
 ### Example 3: Custom Distance Metric
 
-```julia
+```@example kmedoids_4
 using KMeansClustering
 using LinearAlgebra
 
-# Data with angular relationships
 X = rand(3, 100)
 
 # Use cosine distance
@@ -148,35 +120,18 @@ settings = KMedoidsAlgorithm(
 )
 
 result = kmeans(settings)
+
+println("Number of iterations: ", result.iterations)
+println("Converged: ", result.converged)
+println("Inertia: ", result.inertia)
 ```
-
-## Comparison with K-Means
-
-| Aspect | K-Means | K-Medoids |
-|--------|---------|-----------|
-| Cluster centers | Computed centroids (can be artificial) | Actual data points (medoids) |
-| Robustness to outliers | Sensitive | More robust |
-| Distance metrics | Typically Euclidean | Any distance metric |
-| Computational complexity | O(kni) per iteration | O(k(n-k)²) per iteration |
-| Interpretability | Centroids may not be real observations | Medoids are real observations |
-| Memory usage | Lower | Higher |
-
-## When to Use K-Medoids
-
-K-Medoids is particularly well-suited for:
-
-- **Datasets with outliers**: When robustness to extreme values is important
-- **Non-Euclidean spaces**: When using custom distance metrics (e.g., Manhattan, cosine)
-- **Categorical data**: When combined with appropriate distance functions
-- **Interpretability requirements**: When cluster representatives must be actual observations
-- **Small to medium datasets**: Where computational cost is acceptable
 
 ## References
 
-- E.M. Mirkes, "K-means and K-medoids applet", University of Leicester, 2011. [http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
-- Kaufman, L. and Rousseeuw, P.J. (1987), "Clustering by means of Medoids", in Statistical Data Analysis Based on the L1–Norm and Related Methods, edited by Y. Dodge, North-Holland, 405–416.
+- [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
+- [TU Dortmund: k-means Clustering](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmeans-intro/)
 
-## See Also
 
-- [`kmeans`](@ref): Main clustering function
-- [`KMeansResult`](@ref): Result object documentation
+### AI Note
+Parts of the text were compiled using generative AI, notably:
+- A base text was produced for the Overview and then modified

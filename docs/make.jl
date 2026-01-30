@@ -6,9 +6,9 @@ DocMeta.setdocmeta!(KMeansClustering, :DocTestSetup, :(using KMeansClustering); 
 makedocs(;
     modules=[KMeansClustering],
     authors="Mark-André Schadow <m.schadow@campus.tu-berlin.de>",
-    sitename="KMeansClustering.jl",
+    sitename="KMeansClustering",
     format=Documenter.HTML(;
-        canonical="https://github.com/ShadyKadry/Kmeans-Clustering.jl",
+        canonical="https://github.com/ShadyKadry/Kmeans-Clustering",
         edit_link="main",
         assets=String[],
     ),
@@ -16,12 +16,15 @@ makedocs(;
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
         "Algorithms" => [
-            "KMedoids" => "algorithms/kmedoids.md",
+            "K-Medoids" => "algorithms/kmedoids.md",
+            "Simple KMeans" => "algorithms/simplekmeans.md",
+            "KMeans with Log Heuristic" => "algorithms/kmeanslog.md",
+            "Bisecting K-Means" => "algorithms/bkmeans.md"
         ]
     ],
 )
 
 deploydocs(;
-    repo="github.com/ShadyKadry/Kmeans-Clustering.jl",
-    devbranch="main",
+    repo="github.com/ShadyKadry/Kmeans-Clustering",
+    devbranch="main"
 )

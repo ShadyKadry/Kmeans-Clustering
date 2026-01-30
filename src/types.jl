@@ -13,7 +13,7 @@ Conventions:
 - The centers matrix follows the same convention: each column is a cluster center.
 
 Fields:
-- centers::Matrix{T}
+- centers::AbstractMatrix{T}
     The final cluster centers as a d×k matrix, where d is the number of features
     and k is the number of clusters.
 
@@ -23,8 +23,10 @@ Fields:
     in 1:k indicating the cluster index of point i.
 
 - inertia::T
-    The sum of squared distances of each point to its assigned center
+    The sum of the values of each k-means objective function. For all functions except for `kmeanslog`,
+    this is the sum of squared distances of each point to its assigned center
     (within-cluster sum of squares), used as a measure of cluster quality.
+    For `kmeanslog`, this is the sum of the log of all distances from the cluster center.
 
 - iterations::Int
     The number of iterations of the k-means update loop that were performed.
@@ -36,10 +38,10 @@ Fields:
 - init_method::Symbol
     The initialization method used for the run, e.g. :random or :kmeanspp.
 """
-struct KMeansResult{T<:Real}
-    centers::Matrix{T}
+struct KMeansResult{K<: Real, T<:AbstractMatrix{K}}
+    centers::T
     assignments::Vector{Int}
-    inertia::T
+    inertia::K
     iterations::Int
     converged::Bool
     init_method::Symbol
