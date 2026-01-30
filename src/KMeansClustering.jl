@@ -1,4 +1,3 @@
-
 """
     KMeansClustering
 
@@ -8,120 +7,32 @@ A Julia package for clustering algorithms, including K-Means, K-Medoids, K-Means
 - [`kmeans`](@ref): Perform K-Means clustering.
 # Usage
 julia> using KMeansClustering
+
+# Implemented algorithms
+
+- K-Medoids (method=:kmedoids):
+    As described by [TU Dortmund: Partitioning Around Medoids (k-Medoids)](https://dm.cs.tu-dortmund.de/mlbits/cluster-kmedoids-intro/)
+    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
+    artificial ones.
+
+- Bisecting K-Means (method=:bkmeans):
+    A hierarchical, divisive variant of K-Means.
+    The algorithm starts with a single cluster and repeatedly splits the cluster with the largest
+    within-cluster sum of squared errors (SSE) into two sub-clusters, until `k` clusters are reached.
+    Each split is performed by running a 2-means sub-problem (optionally with multiple restarts via `nstart`).
 """
 module KMeansClustering
+using Random: AbstractRNG, GLOBAL_RNG, randperm
 
 include("types.jl")
-include("utils.jl")
 include("algorithms/kmeans.jl")
 include("algorithms/kmeanspp.jl")
 include("algorithms/kmedoids.jl")
 include("algorithms/bkmeans.jl")
-include("algorithms/ckmeans.jl")
+include("algorithms/kmeanslog.jl")
 
-using Random
-
-using .KMedoids: KMedoidsAlgorithm, kmedoids_fit
-using .KMeans: simplekmeans
-using .BKMeans: bkmeans
 using .AlgorithmsKMeansPP: kmeanspp_init
 
-
-
-export kmeans, KMeansResult, KMedoidsAlgorithm
-
-"""
-    kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)
-
-High-level entry point for k-means clustering.
-
-Arguments
-- `X`: data matrix with features in rows and observations in columns.
-- `k`: number of clusters.
-
-Keyword arguments
-- `method`: algorithm selector, see below (:kmedoids)
-- `init`: initialization strategy (:random, :kmeanspp).
-- `maxiter`: maximum number of Lloyd iterations.
-- `tol`: tolerance for convergence.
-- `rng`: random number generator.
-
-Returns a `KMeansResult`.
-
-Available algorithms:
-
-- K-Medoids (method=:kmedoids):
-    As described by [E.M. Mirkes, K-means and K-medoids applet. University of Leicester, 2011](http://leicestermath.org.uk/KmeansKmedoids/Kmeans_Kmedoids.html)
-    Unlike typical K-Means, K-Medoids chooses its cluster centers from the given points X instead of calculating
-    artificial ones.
-
-"""
-function kmeans(
-    X::AbstractMatrix{<:Real},
-    k::Integer;
-    method::Symbol=:kmeans,
-    init::Symbol=:random,
-    maxiter::Int=100,
-    tol::Real=1e-4,
-    rng::AbstractRNG=Random.GLOBAL_RNG
-)
-
-    if method == :kmedoids
-        return kmedoids_fit(X, k, max_iter=maxiter, tol=tol, rng=rng)
-    elseif method == :kmeans
-        n = size(X, 2)
-        if k < 1 || k > n
-            throw(ArgumentError("k must be between 1 and number of observations (size(X,2))=$n, got $k"))
-        end
-
-        if init == :random
-            idx = randperm(rng, n)[1:k]
-            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
-        elseif init == :kmeanspp
-            idx = kmeanspp_init(X, k; rng=rng)
-            return simplekmeans(X, X[:, idx], init_method=init, maxiter=maxiter, tol=tol)
-        else
-            error("initialization strategy '$init' is not implemented")
-        end
-
-    elseif method == :bkmeans
-        ce, as, to, co = bkmeans(Float64.(X), k, maxiter, tol)
-        return KMeansResult(ce, as, to, co)
-    else
-        error("method '$method' is not implemented.")
-    end
-end
-
-
-"""
-    kmeans(KMedoidsAlgorithm)
-
-    Entry point for K-Medoids clustering using a settings object instead.
-
-# Arguments
-- `KMedoidsAlgorithm`: Settings object. See object description for more information
-
-# Returns
-A `KMeansResult` containing the clustering results.
-
-# Example
-```julia
-settings = KMeansClustering.KMedoidsAlgorithm(
-    X,                  # Points, column-wise: rows are the features, cols are the points
-    cluster_count;
-    init_method=:random,
-    max_iter=50,
-)
-result = KMeansClustering.kmeans(settings)
-```
-
-See also: [`kmeans(X, k; method=:kmeans, init=:random, maxiter=100, tol=1e-4, rng=Random.GLOBAL_RNG)`](@ref)
-"""
-function kmeans(
-    settings::KMedoidsAlgorithm
-)
-    kmedoids_fit(settings)
-end
-
+export kmeans, KMeansResult, KMedoidsAlgorithm, SimpleKMeansAlgorithm, BKMeansAlgorithm, simplekmeans, KMeansLogAlgorithm
 
 end # module
