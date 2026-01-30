@@ -144,7 +144,7 @@ Fields:
 - `maxinneriter::Int`
     Maximum number of iterations for iterative reweighted least squares(IRLS), which is used to compute the new cluster point.
 - `eps`
-    epsilon to avoid `log(0)`
+    epsilon to avoid division by 0 or `log(0)` during computation.
 """
 struct KMeansLogAlgorithm{K<:Real,T<:AbstractMatrix{<:K}} <: KMeansAlgorithm
   dataset::T
